@@ -20,7 +20,7 @@ dependencies:
   path: ^1.9.1
   rrule: ^0.2.18
   sqflite: ^2.4.1
-  share_plus: ^10.1.4
+  share_plus: ^13.3.0
   timezone: ^0.10.1
   url_launcher: ^6.3.2
   workmanager: 0.10.10
