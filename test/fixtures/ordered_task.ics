@@ -1,0 +1,17 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Nextcloud Tasks//NONSGML v1.0//EN
+BEGIN:VTODO
+UID:task-2
+CREATED:20260914T120000Z
+LAST-MODIFIED:20260914T120000Z
+DTSTAMP:20260914T120000Z
+SUMMARY:Second task
+DESCRIPTION:A deliberately long description that is folded by another client
+  and must remain semantically intact when Cloud Tasks changes the manual order.
+RELATED-TO;RELTYPE=PARENT:parent-1
+STATUS:NEEDS-ACTION
+X-APPLE-SORT-ORDER:2097152
+X-EXPERIMENTAL-PROPERTY;CLIENT="another:client":keep-me
+END:VTODO
+END:VCALENDAR
