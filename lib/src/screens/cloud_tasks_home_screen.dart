@@ -262,7 +262,7 @@ class _CloudTasksHomeScreenState extends State<CloudTasksHomeScreen>
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 DropdownButtonFormField<CloudTasksTheme>(
-                  value: selected.theme,
+                  initialValue: selected.theme,
                   decoration: const InputDecoration(labelText: 'Appearance'),
                   items: const <DropdownMenuItem<CloudTasksTheme>>[
                     DropdownMenuItem(
@@ -288,7 +288,7 @@ class _CloudTasksHomeScreenState extends State<CloudTasksHomeScreen>
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<int>(
-                  value: selected.automaticSyncMinutes,
+                  initialValue: selected.automaticSyncMinutes,
                   decoration: const InputDecoration(
                     labelText: 'Automatic sync',
                   ),

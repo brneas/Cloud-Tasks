@@ -773,7 +773,7 @@ class _ShareEditorDialogState extends State<ShareEditorDialog> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           DropdownButtonFormField<CalendarShareKind>(
-            value: _kind,
+            initialValue: _kind,
             decoration: const InputDecoration(
               labelText: 'Recipient type',
               border: OutlineInputBorder(),
@@ -1455,12 +1455,13 @@ class _TaskGroup extends StatelessWidget {
               nodes: completedNodes,
               depth: depth,
             ),
-      onReorder: (oldIndex, newIndex) => unawaited(
+      onReorderItem: (oldIndex, newIndex) => unawaited(
         controller.reorderTaskGroup(
           parentUid: parentUid,
           displayedUids: displayedUids,
           oldIndex: oldIndex,
-          newIndex: newIndex,
+          // The ordering service retains Flutter's original callback contract.
+          newIndex: newIndex > oldIndex ? newIndex + 1 : newIndex,
         ),
       ),
       itemBuilder: (context, index) {
@@ -1806,7 +1807,7 @@ class _TaskCardState extends State<_TaskCard> {
           _SmallChip(
             icon: Icons.list_alt,
             label: calendar.displayName,
-            color: _calendarColor(calendar.color)?.withOpacity(0.18),
+            color: _calendarColor(calendar.color)?.withValues(alpha: 0.18),
           ),
         );
       }

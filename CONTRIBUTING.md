@@ -15,7 +15,7 @@ welcome.
 
 ## Development setup
 
-Use Flutter 3.38.1 or newer, Dart 3.10 or newer, and JDK 17. If the Android
+Use Flutter 3.44.0 or newer, Dart 3.12 or newer, and JDK 17. If the Android
 directory is absent, generate it with the permanent application identity:
 
 ```bash

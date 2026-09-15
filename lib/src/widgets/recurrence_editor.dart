@@ -112,7 +112,7 @@ class _RecurrenceEditorState extends State<RecurrenceEditor> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _frequency,
+                initialValue: _frequency,
                 decoration: const InputDecoration(
                   labelText: 'Frequency',
                   border: OutlineInputBorder(),
@@ -182,7 +182,7 @@ class _RecurrenceEditorState extends State<RecurrenceEditor> {
               ],
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _endMode,
+                initialValue: _endMode,
                 decoration: const InputDecoration(
                   labelText: 'Ends',
                   border: OutlineInputBorder(),

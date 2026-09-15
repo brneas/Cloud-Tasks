@@ -10,7 +10,7 @@ The final Android identity is:
 | Application ID | `org.tecdesigns.cloud_tasks` |
 | Android namespace | `org.tecdesigns.cloud_tasks` |
 | Launcher name | `Cloud Tasks` |
-| Release version | `1.0.0+19` |
+| Release version | `1.0.0+20` |
 
 The application ID and signing certificate together identify an installed
 Android app. Keep both stable for every future update.

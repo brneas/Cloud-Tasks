@@ -2,6 +2,9 @@
 
 ## 1.0.0
 
+- Updated the release toolchain to Flutter 3.44 and Dart 3.12 and migrated
+  deprecated form, color and reorder APIs without changing manual-order
+  behavior.
 - Finalized the Android identity as `org.tecdesigns.cloud_tasks` with the
   launcher name Cloud Tasks.
 - Added a secure direct-APK release guide, GitHub security policy, contribution
