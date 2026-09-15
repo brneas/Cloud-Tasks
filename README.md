@@ -48,7 +48,7 @@ See [Security and privacy](docs/security.md) for the complete data-flow model.
 - Flutter 3.44.0 or newer and Dart 3.12 or newer
 - JDK 17
 - A supported Nextcloud instance with at least one CalDAV task collection
-- Android 6.0 (API 23) or newer
+- Android 7.0 (API 24) or newer
 
 ## Build from source
 
