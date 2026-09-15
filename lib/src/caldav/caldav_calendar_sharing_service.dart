@@ -91,8 +91,8 @@ class CalDavCalendarSharingService {
       }
       shares.sort(
         (left, right) => left.displayName.toLowerCase().compareTo(
-              right.displayName.toLowerCase(),
-            ),
+          right.displayName.toLowerCase(),
+        ),
       );
       return List<CalendarShare>.unmodifiable(shares);
     } on XmlParserException {
@@ -160,7 +160,8 @@ class CalDavCalendarSharingService {
         'Accept': 'application/xml, text/xml',
         'Content-Type': 'application/xml; charset=utf-8',
       },
-      body: '<?xml version="1.0" encoding="utf-8"?>'
+      body:
+          '<?xml version="1.0" encoding="utf-8"?>'
           '<oc:share xmlns:oc="$ownCloudNamespace" xmlns:d="$davNamespace">'
           '$operation</oc:share>',
     );

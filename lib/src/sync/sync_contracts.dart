@@ -151,10 +151,7 @@ abstract interface class TaskStore {
     Iterable<Uri> deletedHrefs = const <Uri>[],
   });
 
-  Future<void> saveLocalEdit(
-    TaskRecord record,
-    PendingTaskOperation operation,
-  );
+  Future<void> saveLocalEdit(TaskRecord record, PendingTaskOperation operation);
 
   Future<List<PendingTaskOperation>> readPendingOperations();
 }

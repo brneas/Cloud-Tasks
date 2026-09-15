@@ -65,47 +65,50 @@ void main() {
       );
     });
 
-    test('keeps polling after a transient background network failure', () async {
-      var pollCount = 0;
-      final client = MockClient((request) async {
-        if (request.url.path.endsWith('/index.php/login/v2')) {
+    test(
+      'keeps polling after a transient background network failure',
+      () async {
+        var pollCount = 0;
+        final client = MockClient((request) async {
+          if (request.url.path.endsWith('/index.php/login/v2')) {
+            return http.Response(
+              jsonEncode(<String, Object?>{
+                'login': 'https://cloud.example/login/flow/abc',
+                'poll': <String, Object?>{
+                  'token': 'poll-token',
+                  'endpoint': 'https://cloud.example/login/v2/poll',
+                },
+              }),
+              200,
+            );
+          }
+
+          pollCount++;
+          if (pollCount == 1) {
+            throw http.ClientException('Application moved to background');
+          }
           return http.Response(
-            jsonEncode(<String, Object?>{
-              'login': 'https://cloud.example/login/flow/abc',
-              'poll': <String, Object?>{
-                'token': 'poll-token',
-                'endpoint': 'https://cloud.example/login/v2/poll',
-              },
+            jsonEncode(<String, String>{
+              'server': 'https://cloud.example',
+              'loginName': 'alice',
+              'appPassword': 'app-password',
             }),
             200,
           );
-        }
-
-        pollCount++;
-        if (pollCount == 1) {
-          throw http.ClientException('Application moved to background');
-        }
-        return http.Response(
-          jsonEncode(<String, String>{
-            'server': 'https://cloud.example',
-            'loginName': 'alice',
-            'appPassword': 'app-password',
-          }),
-          200,
+        });
+        final flow = LoginFlowV2(
+          client: client,
+          openBrowser: (_) async => true,
+          delay: (_) async {},
+          pollInterval: Duration.zero,
+          maxPollAttempts: 2,
         );
-      });
-      final flow = LoginFlowV2(
-        client: client,
-        openBrowser: (_) async => true,
-        delay: (_) async {},
-        pollInterval: Duration.zero,
-        maxPollAttempts: 2,
-      );
 
-      final account = await flow.authenticate('https://cloud.example');
+        final account = await flow.authenticate('https://cloud.example');
 
-      expect(account.loginName, 'alice');
-      expect(pollCount, 2);
-    });
+        expect(account.loginName, 'alice');
+        expect(pollCount, 2);
+      },
+    );
   });
 }

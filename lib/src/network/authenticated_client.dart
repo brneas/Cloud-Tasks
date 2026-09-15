@@ -4,11 +4,9 @@ import 'package:cloud_tasks/src/account/nextcloud_account.dart';
 import 'package:http/http.dart' as http;
 
 class AuthenticatedClient extends http.BaseClient {
-  AuthenticatedClient({
-    required NextcloudAccount account,
-    http.Client? inner,
-  })  : _account = account,
-        _inner = inner ?? http.Client();
+  AuthenticatedClient({required NextcloudAccount account, http.Client? inner})
+    : _account = account,
+      _inner = inner ?? http.Client();
 
   final NextcloudAccount _account;
   final http.Client _inner;

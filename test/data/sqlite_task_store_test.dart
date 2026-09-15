@@ -72,105 +72,115 @@ void main() {
     expect(await store.readDefaultCalendarId('account'), isNull);
   });
 
-  test('coalesces local edits and atomically completes the queued write',
-      () async {
-    final store = SqliteTaskStore(
-      factory: databaseFactoryFfi,
-      databasePath: inMemoryDatabasePath,
-    );
-    addTearDown(store.close);
-    final calendar = TaskCalendar(
-      id: 'personal',
-      accountId: 'account',
-      href: Uri.parse('https://cloud.example/calendars/alice/personal/'),
-      displayName: 'Personal',
-      isReadOnly: false,
-    );
-    final original = _record('task', 100);
-    await store.replaceInitialSnapshot(calendar, <TaskRecord>[original]);
+  test(
+    'coalesces local edits and atomically completes the queued write',
+    () async {
+      final store = SqliteTaskStore(
+        factory: databaseFactoryFfi,
+        databasePath: inMemoryDatabasePath,
+      );
+      addTearDown(store.close);
+      final calendar = TaskCalendar(
+        id: 'personal',
+        accountId: 'account',
+        href: Uri.parse('https://cloud.example/calendars/alice/personal/'),
+        displayName: 'Personal',
+        isReadOnly: false,
+      );
+      final original = _record('task', 100);
+      await store.replaceInitialSnapshot(calendar, <TaskRecord>[original]);
 
-    final renamedDocument = const VTodoCodec().writeSummary(
-      original.rawDocument,
-      'Renamed',
-    );
-    final renamed = _editedRecord(original, renamedDocument);
-    await store.saveLocalEdit(
-      renamed,
-      PendingTaskOperation.update(
-        taskUid: 'task',
+      final renamedDocument = const VTodoCodec().writeSummary(
+        original.rawDocument,
+        'Renamed',
+      );
+      final renamed = _editedRecord(original, renamedDocument);
+      await store.saveLocalEdit(
+        renamed,
+        PendingTaskOperation.update(
+          taskUid: 'task',
+          calendarId: 'personal',
+          changedProperties: const <String>{'SUMMARY'},
+          createdAt: DateTime.utc(2026, 9, 14, 10),
+        ),
+      );
+
+      final completedDocument = const VTodoCodec().writeCompletion(
+        renamedDocument,
+        isCompleted: true,
+        now: DateTime.utc(2026, 9, 14, 11),
+      );
+      final completed = _editedRecord(renamed, completedDocument);
+      await store.saveLocalEdit(
+        completed,
+        PendingTaskOperation.update(
+          taskUid: 'task',
+          calendarId: 'personal',
+          changedProperties: const <String>{
+            'STATUS',
+            'PERCENT-COMPLETE',
+            'COMPLETED',
+          },
+          createdAt: DateTime.utc(2026, 9, 14, 11),
+        ),
+      );
+
+      final pending = await store.readPendingOperations();
+      expect(pending, hasLength(1));
+      expect(pending.single.changedProperties, <String>{
+        'SUMMARY',
+        'STATUS',
+        'PERCENT-COMPLETE',
+        'COMPLETED',
+      });
+      expect(pending.single.createdAt, DateTime.utc(2026, 9, 14, 10));
+      expect(
+        (await store.readTask(
+          calendarId: 'personal',
+          taskUid: 'task',
+        ))?.isDirty,
+        isTrue,
+      );
+
+      final serverRecord = TaskRecord(
+        task: completed.task,
+        href: completed.href,
+        etag: '"server-etag"',
+        rawDocument: completed.rawDocument,
+        baseDocument: completed.rawDocument,
+      );
+      await store.completePendingWrite(serverRecord, pending.single.id);
+
+      expect(await store.readPendingOperations(), isEmpty);
+      final saved = await store.readTask(
         calendarId: 'personal',
-        changedProperties: const <String>{'SUMMARY'},
-        createdAt: DateTime.utc(2026, 9, 14, 10),
-      ),
-    );
-
-    final completedDocument = const VTodoCodec().writeCompletion(
-      renamedDocument,
-      isCompleted: true,
-      now: DateTime.utc(2026, 9, 14, 11),
-    );
-    final completed = _editedRecord(renamed, completedDocument);
-    await store.saveLocalEdit(
-      completed,
-      PendingTaskOperation.update(
         taskUid: 'task',
-        calendarId: 'personal',
-        changedProperties: const <String>{
-          'STATUS',
-          'PERCENT-COMPLETE',
-          'COMPLETED',
-        },
-        createdAt: DateTime.utc(2026, 9, 14, 11),
-      ),
-    );
+      );
+      expect(saved?.isDirty, isFalse);
+      expect(saved?.etag, '"server-etag"');
+      expect(saved?.task.summary, 'Renamed');
+      expect(saved?.task.status, CloudTaskStatus.completed);
+    },
+  );
 
-    final pending = await store.readPendingOperations();
-    expect(pending, hasLength(1));
-    expect(
-      pending.single.changedProperties,
-      <String>{'SUMMARY', 'STATUS', 'PERCENT-COMPLETE', 'COMPLETED'},
-    );
-    expect(pending.single.createdAt, DateTime.utc(2026, 9, 14, 10));
-    expect((await store.readTask(
-      calendarId: 'personal',
-      taskUid: 'task',
-    ))?.isDirty, isTrue);
-
-    final serverRecord = TaskRecord(
-      task: completed.task,
-      href: completed.href,
-      etag: '"server-etag"',
-      rawDocument: completed.rawDocument,
-      baseDocument: completed.rawDocument,
-    );
-    await store.completePendingWrite(serverRecord, pending.single.id);
-
-    expect(await store.readPendingOperations(), isEmpty);
-    final saved = await store.readTask(
-      calendarId: 'personal',
-      taskUid: 'task',
-    );
-    expect(saved?.isDirty, isFalse);
-    expect(saved?.etag, '"server-etag"');
-    expect(saved?.task.summary, 'Renamed');
-    expect(saved?.task.status, CloudTaskStatus.completed);
-  });
-
-  test('upgrades the version 1 pending queue without losing operations',
-      () async {
-    final directory = await Directory.systemTemp.createTemp('cloud_tasks_db_');
-    addTearDown(() => directory.delete(recursive: true));
-    final databasePath = '${directory.path}/cloud_tasks.db';
-    final versionOne = await databaseFactoryFfi.openDatabase(
-      databasePath,
-      options: OpenDatabaseOptions(
-        version: 1,
-        onCreate: (database, _) async {
-          await database.execute('''
+  test(
+    'upgrades the version 1 pending queue without losing operations',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'cloud_tasks_db_',
+      );
+      addTearDown(() => directory.delete(recursive: true));
+      final databasePath = '${directory.path}/cloud_tasks.db';
+      final versionOne = await databaseFactoryFfi.openDatabase(
+        databasePath,
+        options: OpenDatabaseOptions(
+          version: 1,
+          onCreate: (database, _) async {
+            await database.execute('''
 CREATE TABLE calendars (
   id TEXT PRIMARY KEY
 )''');
-          await database.execute('''
+            await database.execute('''
 CREATE TABLE pending_operations (
   id TEXT PRIMARY KEY,
   task_uid TEXT NOT NULL,
@@ -178,154 +188,150 @@ CREATE TABLE pending_operations (
   operation_type TEXT NOT NULL,
   created_at TEXT NOT NULL
 )''');
-          await database.insert('pending_operations', <String, Object?>{
-            'id': 'personal\\ntask\\nupdate',
-            'task_uid': 'task',
-            'calendar_id': 'personal',
-            'operation_type': 'update',
-            'created_at': DateTime.utc(2026, 9, 14).toIso8601String(),
-          });
-        },
-      ),
-    );
-    await versionOne.close();
+            await database.insert('pending_operations', <String, Object?>{
+              'id': 'personal\\ntask\\nupdate',
+              'task_uid': 'task',
+              'calendar_id': 'personal',
+              'operation_type': 'update',
+              'created_at': DateTime.utc(2026, 9, 14).toIso8601String(),
+            });
+          },
+        ),
+      );
+      await versionOne.close();
 
-    final store = SqliteTaskStore(
-      factory: databaseFactoryFfi,
-      databasePath: databasePath,
-    );
-    addTearDown(store.close);
-    final upgraded = await store.database;
-    final columns = await upgraded.rawQuery(
-      'PRAGMA table_info(pending_operations)',
-    );
+      final store = SqliteTaskStore(
+        factory: databaseFactoryFfi,
+        databasePath: databasePath,
+      );
+      addTearDown(store.close);
+      final upgraded = await store.database;
+      final columns = await upgraded.rawQuery(
+        'PRAGMA table_info(pending_operations)',
+      );
 
-    expect(
-      columns.map((column) => column['name']),
-      containsAll(<String>[
-        'changed_properties',
-        'batch_id',
-        'batch_phase',
-      ]),
-    );
-    final calendarColumns = await upgraded.rawQuery(
-      'PRAGMA table_info(calendars)',
-    );
-    expect(
-      calendarColumns.map((column) => column['name']),
-      containsAll(<String>[
-        'owner_href',
-        'is_shared_with_me',
-        'can_be_shared',
-      ]),
-    );
-    final pending = await store.readPendingOperations();
-    expect(pending, hasLength(1));
-    expect(pending.single.changedProperties, isEmpty);
-    expect(pending.single.batchId, isNull);
-    expect(pending.single.batchPhase, 0);
-    final preferences = await store.readAppPreferences();
-    expect(preferences.theme, CloudTasksTheme.system);
-    expect(preferences.automaticSyncMinutes, 0);
-    expect(preferences.syncOnResume, isTrue);
-    expect(preferences.descendingManualOrder, isFalse);
-    expect(preferences.lastCalendarId, isNull);
-    expect(preferences.lastSmartView, isNull);
+      expect(
+        columns.map((column) => column['name']),
+        containsAll(<String>['changed_properties', 'batch_id', 'batch_phase']),
+      );
+      final calendarColumns = await upgraded.rawQuery(
+        'PRAGMA table_info(calendars)',
+      );
+      expect(
+        calendarColumns.map((column) => column['name']),
+        containsAll(<String>[
+          'owner_href',
+          'is_shared_with_me',
+          'can_be_shared',
+        ]),
+      );
+      final pending = await store.readPendingOperations();
+      expect(pending, hasLength(1));
+      expect(pending.single.changedProperties, isEmpty);
+      expect(pending.single.batchId, isNull);
+      expect(pending.single.batchPhase, 0);
+      final preferences = await store.readAppPreferences();
+      expect(preferences.theme, CloudTasksTheme.system);
+      expect(preferences.automaticSyncMinutes, 0);
+      expect(preferences.syncOnResume, isTrue);
+      expect(preferences.descendingManualOrder, isFalse);
+      expect(preferences.lastCalendarId, isNull);
+      expect(preferences.lastSmartView, isNull);
 
-    final preferenceColumns = await upgraded.rawQuery(
-      'PRAGMA table_info(app_preferences)',
-    );
-    expect(
-      preferenceColumns.map((column) => column['name']),
-      containsAll(<String>[
-        'descending_manual_order',
-        'last_calendar_id',
-        'last_smart_view',
-      ]),
-    );
-  });
+      final preferenceColumns = await upgraded.rawQuery(
+        'PRAGMA table_info(app_preferences)',
+      );
+      expect(
+        preferenceColumns.map((column) => column['name']),
+        containsAll(<String>[
+          'descending_manual_order',
+          'last_calendar_id',
+          'last_smart_view',
+        ]),
+      );
+    },
+  );
 
-  test('coalesces an offline create and update, then cancels before upload',
-      () async {
-    final store = SqliteTaskStore(
-      factory: databaseFactoryFfi,
-      databasePath: inMemoryDatabasePath,
-    );
-    addTearDown(store.close);
-    final calendar = TaskCalendar(
-      id: 'personal',
-      accountId: 'account',
-      href: Uri.parse('https://cloud.example/calendars/alice/personal/'),
-      displayName: 'Personal',
-      isReadOnly: false,
-    );
-    await store.saveCalendars(<TaskCalendar>[calendar]);
-    final document = const VTodoCodec().create(
-      uid: 'new-task',
-      summary: 'New task',
-      sortOrder: 100,
-      now: DateTime.utc(2026, 9, 15),
-    );
-    final created = TaskRecord(
-      task: const VTodoCodec().decode(document, calendarId: 'personal'),
-      href: Uri.parse(
-        'https://cloud.example/calendars/alice/personal/new-task.ics',
-      ),
-      rawDocument: document,
-      isDirty: true,
-    );
-    await store.saveLocalEdit(
-      created,
-      PendingTaskOperation.create(
-        taskUid: 'new-task',
-        calendarId: 'personal',
-      ),
-    );
+  test(
+    'coalesces an offline create and update, then cancels before upload',
+    () async {
+      final store = SqliteTaskStore(
+        factory: databaseFactoryFfi,
+        databasePath: inMemoryDatabasePath,
+      );
+      addTearDown(store.close);
+      final calendar = TaskCalendar(
+        id: 'personal',
+        accountId: 'account',
+        href: Uri.parse('https://cloud.example/calendars/alice/personal/'),
+        displayName: 'Personal',
+        isReadOnly: false,
+      );
+      await store.saveCalendars(<TaskCalendar>[calendar]);
+      final document = const VTodoCodec().create(
+        uid: 'new-task',
+        summary: 'New task',
+        sortOrder: 100,
+        now: DateTime.utc(2026, 9, 15),
+      );
+      final created = TaskRecord(
+        task: const VTodoCodec().decode(document, calendarId: 'personal'),
+        href: Uri.parse(
+          'https://cloud.example/calendars/alice/personal/new-task.ics',
+        ),
+        rawDocument: document,
+        isDirty: true,
+      );
+      await store.saveLocalEdit(
+        created,
+        PendingTaskOperation.create(
+          taskUid: 'new-task',
+          calendarId: 'personal',
+        ),
+      );
 
-    final renamedDocument = const VTodoCodec().writeSummary(
-      document,
-      'Renamed before upload',
-    );
-    final renamed = _editedRecord(created, renamedDocument);
-    await store.saveLocalEdit(
-      renamed,
-      PendingTaskOperation.update(
-        taskUid: 'new-task',
-        calendarId: 'personal',
-        changedProperties: const <String>{'SUMMARY'},
-      ),
-    );
+      final renamedDocument = const VTodoCodec().writeSummary(
+        document,
+        'Renamed before upload',
+      );
+      final renamed = _editedRecord(created, renamedDocument);
+      await store.saveLocalEdit(
+        renamed,
+        PendingTaskOperation.update(
+          taskUid: 'new-task',
+          calendarId: 'personal',
+          changedProperties: const <String>{'SUMMARY'},
+        ),
+      );
 
-    var pending = await store.readPendingOperations();
-    expect(pending, hasLength(1));
-    expect(pending.single.type, PendingOperationType.create);
-    expect((await store.readTaskCounts('account'))['personal'], 1);
-    expect(
-      (await store.readTask(
-        calendarId: 'personal',
-        taskUid: 'new-task',
-      ))?.task.summary,
-      'Renamed before upload',
-    );
+      var pending = await store.readPendingOperations();
+      expect(pending, hasLength(1));
+      expect(pending.single.type, PendingOperationType.create);
+      expect((await store.readTaskCounts('account'))['personal'], 1);
+      expect(
+        (await store.readTask(
+          calendarId: 'personal',
+          taskUid: 'new-task',
+        ))?.task.summary,
+        'Renamed before upload',
+      );
 
-    await store.saveLocalEdit(
-      renamed,
-      PendingTaskOperation.delete(
-        taskUid: 'new-task',
-        calendarId: 'personal',
-      ),
-    );
+      await store.saveLocalEdit(
+        renamed,
+        PendingTaskOperation.delete(
+          taskUid: 'new-task',
+          calendarId: 'personal',
+        ),
+      );
 
-    pending = await store.readPendingOperations();
-    expect(pending, isEmpty);
-    expect(
-      await store.readTask(
-        calendarId: 'personal',
-        taskUid: 'new-task',
-      ),
-      isNull,
-    );
-  });
+      pending = await store.readPendingOperations();
+      expect(pending, isEmpty);
+      expect(
+        await store.readTask(calendarId: 'personal', taskUid: 'new-task'),
+        isNull,
+      );
+    },
+  );
 
   test('queues and completes deletion of a synchronized task', () async {
     final store = SqliteTaskStore(
@@ -357,54 +363,54 @@ CREATE TABLE pending_operations (
 
     expect(await store.readPendingOperations(), isEmpty);
     expect(
-      await store.readTask(
-        calendarId: 'personal',
-        taskUid: 'delete-me',
-      ),
+      await store.readTask(calendarId: 'personal', taskUid: 'delete-me'),
       isNull,
     );
   });
 
-  test('loads roots and subtasks together while preserving sibling queries',
-      () async {
-    final store = SqliteTaskStore(
-      factory: databaseFactoryFfi,
-      databasePath: inMemoryDatabasePath,
-    );
-    addTearDown(store.close);
-    final calendar = TaskCalendar(
-      id: 'personal',
-      accountId: 'account',
-      href: Uri.parse('https://cloud.example/calendars/alice/personal/'),
-      displayName: 'Personal',
-      isReadOnly: false,
-    );
-    final root = _record('root', 100);
-    final laterChild = _record('later-child', 200, parentUid: 'root');
-    final firstChild = _record('first-child', 100, parentUid: 'root');
-    await store.replaceInitialSnapshot(
-      calendar,
-      <TaskRecord>[laterChild, root, firstChild],
-    );
+  test(
+    'loads roots and subtasks together while preserving sibling queries',
+    () async {
+      final store = SqliteTaskStore(
+        factory: databaseFactoryFfi,
+        databasePath: inMemoryDatabasePath,
+      );
+      addTearDown(store.close);
+      final calendar = TaskCalendar(
+        id: 'personal',
+        accountId: 'account',
+        href: Uri.parse('https://cloud.example/calendars/alice/personal/'),
+        displayName: 'Personal',
+        isReadOnly: false,
+      );
+      final root = _record('root', 100);
+      final laterChild = _record('later-child', 200, parentUid: 'root');
+      final firstChild = _record('first-child', 100, parentUid: 'root');
+      await store.replaceInitialSnapshot(calendar, <TaskRecord>[
+        laterChild,
+        root,
+        firstChild,
+      ]);
 
-    final all = await store.readCalendarTasks('personal');
-    final roots = await store.readAllTasks('personal');
-    final children = await store.readSiblingGroup(
-      calendarId: 'personal',
-      parentUid: 'root',
-    );
+      final all = await store.readCalendarTasks('personal');
+      final roots = await store.readAllTasks('personal');
+      final children = await store.readSiblingGroup(
+        calendarId: 'personal',
+        parentUid: 'root',
+      );
 
-    expect(all.map((record) => record.task.uid).toSet(), {
-      'root',
-      'first-child',
-      'later-child',
-    });
-    expect(roots.map((record) => record.task.uid), <String>['root']);
-    expect(
-      children.map((record) => record.task.uid),
-      <String>['first-child', 'later-child'],
-    );
-  });
+      expect(all.map((record) => record.task.uid).toSet(), {
+        'root',
+        'first-child',
+        'later-child',
+      });
+      expect(roots.map((record) => record.task.uid), <String>['root']);
+      expect(children.map((record) => record.task.uid), <String>[
+        'first-child',
+        'later-child',
+      ]);
+    },
+  );
 
   test('queues a cross-list copy before deleting the source task', () async {
     final store = SqliteTaskStore(
@@ -470,13 +476,10 @@ CREATE TABLE pending_operations (
     ]);
 
     final pending = await store.readPendingOperations();
-    expect(
-      pending.map((operation) => operation.type),
-      <PendingOperationType>[
-        PendingOperationType.create,
-        PendingOperationType.delete,
-      ],
-    );
+    expect(pending.map((operation) => operation.type), <PendingOperationType>[
+      PendingOperationType.create,
+      PendingOperationType.delete,
+    ]);
     expect(pending.first.createdAt, copyTime);
     expect(pending.last.createdAt, copyTime.add(const Duration(seconds: 1)));
     expect(pending.first.batchId, 'move-batch');
@@ -579,10 +582,7 @@ CREATE TABLE pending_operations (
     );
     final first = _completedRecord('first', 100);
     final second = _completedRecord('second', 200);
-    await store.replaceInitialSnapshot(
-      calendar,
-      <TaskRecord>[first, second],
-    );
+    await store.replaceInitialSnapshot(calendar, <TaskRecord>[first, second]);
 
     const codec = VTodoCodec();
     final now = DateTime.utc(2026, 9, 15, 12);
@@ -618,10 +618,7 @@ CREATE TABLE pending_operations (
   });
 }
 
-TaskRecord _editedRecord(
-  TaskRecord previous,
-  ICalendarDocument document,
-) {
+TaskRecord _editedRecord(TaskRecord previous, ICalendarDocument document) {
   return TaskRecord(
     task: const VTodoCodec().decode(document, calendarId: 'personal'),
     href: previous.href,
@@ -683,9 +680,7 @@ END:VCALENDAR
 ''');
   return TaskRecord(
     task: const VTodoCodec().decode(document, calendarId: 'personal'),
-    href: Uri.parse(
-      'https://cloud.example/calendars/alice/personal/$uid.ics',
-    ),
+    href: Uri.parse('https://cloud.example/calendars/alice/personal/$uid.ics'),
     etag: '"$uid-etag"',
     rawDocument: document,
     baseDocument: document,

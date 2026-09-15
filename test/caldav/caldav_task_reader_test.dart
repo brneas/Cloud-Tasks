@@ -29,11 +29,14 @@ void main() {
     final records = await reader.readAll(calendar);
 
     expect(records, hasLength(2));
-    expect(records.map((record) => record.task.uid), <String>['later', 'first']);
-    expect(
-      records.map((record) => record.task.sortOrder),
-      <int>[2097152, 1048576],
-    );
+    expect(records.map((record) => record.task.uid), <String>[
+      'later',
+      'first',
+    ]);
+    expect(records.map((record) => record.task.sortOrder), <int>[
+      2097152,
+      1048576,
+    ]);
     expect(records.last.etag, '"etag-first"');
     expect(
       records.last.href,
@@ -65,10 +68,7 @@ void main() {
 
     expect(delta.changed.single.task.uid, 'changed');
     expect(delta.changed.single.task.sortOrder, 3145728);
-    expect(
-      delta.deletedHrefs.single,
-      calendar.href.resolve('deleted.ics'),
-    );
+    expect(delta.deletedHrefs.single, calendar.href.resolve('deleted.ics'));
     expect(delta.nextSyncToken, 'token-2');
   });
 

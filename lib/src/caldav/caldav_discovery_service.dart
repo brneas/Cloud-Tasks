@@ -132,7 +132,7 @@ class CalDavDiscoveryService {
       final href = resolveDavHref(requestUrl, hrefText);
       final displayName =
           elementText(properties, 'displayname', namespace: davNamespace) ??
-              _fallbackDisplayName(href);
+          _fallbackDisplayName(href);
       final color = elementText(
         properties,
         'calendar-color',
@@ -159,13 +159,15 @@ class CalDavDiscoveryService {
       final normalizedPrincipal = _normalizeCollectionHref(
         principalUrl.toString(),
       );
-      final normalizedOwner =
-          ownerHref == null ? null : _normalizeCollectionHref(ownerHref);
+      final normalizedOwner = ownerHref == null
+          ? null
+          : _normalizeCollectionHref(ownerHref);
       final sharingModes = properties.getElement(
         'allowed-sharing-modes',
         namespace: calendarServerNamespace,
       );
-      final canBeShared = sharingModes
+      final canBeShared =
+          sharingModes
               ?.findElements(
                 'can-be-shared',
                 namespace: calendarServerNamespace,
@@ -213,7 +215,8 @@ class CalDavDiscoveryService {
       'resourcetype',
       namespace: davNamespace,
     );
-    final isCalendar = resourceType
+    final isCalendar =
+        resourceType
             ?.findElements('calendar', namespace: calDavNamespace)
             .isNotEmpty ??
         false;
@@ -225,7 +228,9 @@ class CalDavDiscoveryService {
       'supported-calendar-component-set',
       namespace: calDavNamespace,
     );
-    return supported?.findElements('comp', namespace: calDavNamespace).any(
+    return supported
+            ?.findElements('comp', namespace: calDavNamespace)
+            .any(
               (component) =>
                   component.getAttribute('name')?.toUpperCase() == 'VTODO',
             ) ??

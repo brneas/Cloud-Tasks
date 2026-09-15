@@ -35,11 +35,11 @@ void main() {
 
 class _CompletedSectionController extends CloudTasksController {
   _CompletedSectionController()
-      : super(
-          accountStore: _EmptyAccountStore(),
-          taskStore: _WidgetTaskStore(),
-          browserLauncher: (_) async => true,
-        );
+    : super(
+        accountStore: _EmptyAccountStore(),
+        taskStore: _WidgetTaskStore(),
+        browserLauncher: (_) async => true,
+      );
 
   static final TaskCalendar _calendar = TaskCalendar(
     id: 'personal',
@@ -74,25 +74,25 @@ class _CompletedSectionController extends CloudTasksController {
 
   @override
   List<TaskHierarchyNode> get taskTree => const <TaskHierarchyNode>[
-        TaskHierarchyNode(
-          task: CloudTask(
-            uid: 'done-1',
-            calendarId: 'personal',
-            summary: 'Done one',
-            status: CloudTaskStatus.completed,
-          ),
-          children: <TaskHierarchyNode>[],
-        ),
-        TaskHierarchyNode(
-          task: CloudTask(
-            uid: 'done-2',
-            calendarId: 'personal',
-            summary: 'Done two',
-            status: CloudTaskStatus.completed,
-          ),
-          children: <TaskHierarchyNode>[],
-        ),
-      ];
+    TaskHierarchyNode(
+      task: CloudTask(
+        uid: 'done-1',
+        calendarId: 'personal',
+        summary: 'Done one',
+        status: CloudTaskStatus.completed,
+      ),
+      children: <TaskHierarchyNode>[],
+    ),
+    TaskHierarchyNode(
+      task: CloudTask(
+        uid: 'done-2',
+        calendarId: 'personal',
+        summary: 'Done two',
+        status: CloudTaskStatus.completed,
+      ),
+      children: <TaskHierarchyNode>[],
+    ),
+  ];
 
   @override
   Future<int> restoreCompletedTasks() async {

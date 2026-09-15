@@ -36,15 +36,16 @@ class CloudTasksPreferences {
   }) {
     return CloudTasksPreferences(
       theme: theme ?? this.theme,
-      automaticSyncMinutes:
-          automaticSyncMinutes ?? this.automaticSyncMinutes,
+      automaticSyncMinutes: automaticSyncMinutes ?? this.automaticSyncMinutes,
       syncOnResume: syncOnResume ?? this.syncOnResume,
       descendingManualOrder:
           descendingManualOrder ?? this.descendingManualOrder,
-      lastCalendarId:
-          clearLastCalendarId ? null : lastCalendarId ?? this.lastCalendarId,
-      lastSmartView:
-          clearLastSmartView ? null : lastSmartView ?? this.lastSmartView,
+      lastCalendarId: clearLastCalendarId
+          ? null
+          : lastCalendarId ?? this.lastCalendarId,
+      lastSmartView: clearLastSmartView
+          ? null
+          : lastSmartView ?? this.lastSmartView,
     );
   }
 }

@@ -24,8 +24,7 @@ class TaskCalendarNavigation extends StatefulWidget {
   final VoidCallback? onSelected;
 
   @override
-  State<TaskCalendarNavigation> createState() =>
-      _TaskCalendarNavigationState();
+  State<TaskCalendarNavigation> createState() => _TaskCalendarNavigationState();
 }
 
 class _TaskCalendarNavigationState extends State<TaskCalendarNavigation> {
@@ -67,8 +66,7 @@ class _TaskCalendarNavigationState extends State<TaskCalendarNavigation> {
           children: <Widget>[
             ListTile(
               leading: CircleAvatar(
-                backgroundColor:
-                    Theme.of(context).colorScheme.primaryContainer,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 child: Icon(
                   Icons.cloud_outlined,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -86,15 +84,15 @@ class _TaskCalendarNavigationState extends State<TaskCalendarNavigation> {
                     child: Text(
                       'MY LISTS',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                            letterSpacing: 0.8,
-                          ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        letterSpacing: 0.8,
+                      ),
                     ),
                   ),
                   IconButton(
                     tooltip: 'Create task list',
-                    onPressed: controller.isSaving ||
+                    onPressed:
+                        controller.isSaving ||
                             controller.state != CloudTasksViewState.ready
                         ? null
                         : () => unawaited(_createCalendar(context)),
@@ -126,9 +124,8 @@ class _TaskCalendarNavigationState extends State<TaskCalendarNavigation> {
               trailing: Icon(
                 _smartViewsExpanded ? Icons.expand_less : Icons.expand_more,
               ),
-              onTap: () => setState(
-                () => _smartViewsExpanded = !_smartViewsExpanded,
-              ),
+              onTap: () =>
+                  setState(() => _smartViewsExpanded = !_smartViewsExpanded),
             ),
             if (_smartViewsExpanded) ...<Widget>[
               _smartTile(
@@ -236,8 +233,8 @@ class _TaskCalendarNavigationState extends State<TaskCalendarNavigation> {
               calendar.isReadOnly ? 'Shared • Read only' : 'Shared • Can edit',
             )
           : calendar.isReadOnly
-              ? const Text('Read only')
-              : null,
+          ? const Text('Read only')
+          : null,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -355,10 +352,10 @@ class _TaskCalendarNavigationState extends State<TaskCalendarNavigation> {
           content: Text(
             shared
                 ? 'This stops sharing the list with you. It does not delete '
-                    'the owner’s list or tasks.'
+                      'the owner’s list or tasks.'
                 : 'This permanently deletes the list and its '
-                    '${controller.taskCount(calendar.id)} tasks from '
-                    'Nextcloud and every connected device.',
+                      '${controller.taskCount(calendar.id)} tasks from '
+                      'Nextcloud and every connected device.',
           ),
           actions: <Widget>[
             TextButton(
@@ -618,8 +615,8 @@ class _CalendarSharingSheetState extends State<_CalendarSharingSheet> {
                                 onChanged: _loading
                                     ? null
                                     : (value) => unawaited(
-                                          _setPermission(share, value),
-                                        ),
+                                        _setPermission(share, value),
+                                      ),
                               ),
                               IconButton(
                                 tooltip: 'Remove share',
@@ -776,7 +773,7 @@ class _ShareEditorDialogState extends State<ShareEditorDialog> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           DropdownButtonFormField<CalendarShareKind>(
-            value: _kind,
+            initialValue: _kind,
             decoration: const InputDecoration(
               labelText: 'Recipient type',
               border: OutlineInputBorder(),
@@ -1046,9 +1043,8 @@ class CloudTaskListView extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       controller.viewTitle,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                     Text(
                       '$taskCount ${taskCount == 1 ? 'task' : 'tasks'}'
@@ -1110,16 +1106,16 @@ class _EmptyTaskView extends StatelessWidget {
     final title = filtered
         ? 'No matching tasks'
         : completed
-            ? 'No completed tasks'
-            : controller.isSmartView
-                ? 'Nothing here right now'
-                : 'This list is empty';
+        ? 'No completed tasks'
+        : controller.isSmartView
+        ? 'Nothing here right now'
+        : 'This list is empty';
     final description = filtered
         ? 'Try changing or clearing the active search and tag filters.'
         : controller.isSmartView
-            ? 'Tasks will appear here automatically when they match this view.'
-            : 'Add your first task below. It will be available offline and '
-                'synchronized with Nextcloud.';
+        ? 'Tasks will appear here automatically when they match this view.'
+        : 'Add your first task below. It will be available offline and '
+              'synchronized with Nextcloud.';
     return LayoutBuilder(
       builder: (context, constraints) => SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -1149,9 +1145,8 @@ class _EmptyTaskView extends StatelessWidget {
                       description,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     if (filtered) ...<Widget>[
                       const SizedBox(height: 20),
@@ -1296,8 +1291,7 @@ class _TaskComposerState extends State<_TaskComposer> {
                       enabled: enabled,
                       icon: const Icon(Icons.more_vert),
                       onSelected: (_) => unawaited(_addMultiple()),
-                      itemBuilder: (context) =>
-                          const <PopupMenuEntry<String>>[
+                      itemBuilder: (context) => const <PopupMenuEntry<String>>[
                         PopupMenuItem(
                           value: 'many',
                           child: Text('Add multiple tasks'),
@@ -1436,7 +1430,8 @@ class _TaskGroup extends StatelessWidget {
         ? nodes
         : nodes.where((node) => !node.task.isClosed).toList(growable: false);
     final displayedUids = activeNodes.map((node) => node.task.uid).toList();
-    final viewKey = controller.selectedCalendarId ??
+    final viewKey =
+        controller.selectedCalendarId ??
         controller.selectedSmartView?.name ??
         'all';
     return ReorderableListView.builder(
@@ -1460,12 +1455,13 @@ class _TaskGroup extends StatelessWidget {
               nodes: completedNodes,
               depth: depth,
             ),
-      onReorder: (oldIndex, newIndex) => unawaited(
+      onReorderItem: (oldIndex, newIndex) => unawaited(
         controller.reorderTaskGroup(
           parentUid: parentUid,
           displayedUids: displayedUids,
           oldIndex: oldIndex,
-          newIndex: newIndex,
+          // The ordering service retains Flutter's original callback contract.
+          newIndex: newIndex > oldIndex ? newIndex + 1 : newIndex,
         ),
       ),
       itemBuilder: (context, index) {
@@ -1498,8 +1494,7 @@ class _CompletedTaskSection extends StatefulWidget {
   final int depth;
 
   @override
-  State<_CompletedTaskSection> createState() =>
-      _CompletedTaskSectionState();
+  State<_CompletedTaskSection> createState() => _CompletedTaskSectionState();
 }
 
 class _CompletedTaskSectionState extends State<_CompletedTaskSection> {
@@ -1567,7 +1562,7 @@ class _CompletedTaskSectionState extends State<_CompletedTaskSection> {
             restored == 0
                 ? 'No completed tasks could be restored.'
                 : '$restored completed '
-                    '${restored == 1 ? 'task was' : 'tasks were'} restored.',
+                      '${restored == 1 ? 'task was' : 'tasks were'} restored.',
           ),
         ),
       );
@@ -1712,9 +1707,8 @@ class _TaskCardState extends State<_TaskCard> {
                     value: completed,
                     onChanged: canEdit
                         ? (_) => unawaited(
-                              widget.controller
-                                  .toggleCompletion(widget.record),
-                            )
+                            widget.controller.toggleCompletion(widget.record),
+                          )
                         : null,
                   ),
                 ),
@@ -1778,11 +1772,7 @@ class _TaskCardState extends State<_TaskCard> {
               padding: const EdgeInsets.fromLTRB(52, 0, 12, 10),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
-                  children: metadata,
-                ),
+                child: Wrap(spacing: 6, runSpacing: 4, children: metadata),
               ),
             ),
           if (_expanded) _buildDetails(context, canEdit, writable),
@@ -1817,7 +1807,7 @@ class _TaskCardState extends State<_TaskCard> {
           _SmallChip(
             icon: Icons.list_alt,
             label: calendar.displayName,
-            color: _calendarColor(calendar.color)?.withOpacity(0.18),
+            color: _calendarColor(calendar.color)?.withValues(alpha: 0.18),
           ),
         );
       }
@@ -2007,8 +1997,9 @@ class _TaskCardState extends State<_TaskCard> {
             runSpacing: 8,
             children: <Widget>[
               OutlinedButton.icon(
-                onPressed:
-                    canEdit ? () => unawaited(_chooseParent(context)) : null,
+                onPressed: canEdit
+                    ? () => unawaited(_chooseParent(context))
+                    : null,
                 icon: const Icon(Icons.account_tree_outlined),
                 label: Text(
                   task.parentUid == null ? 'Make subtask' : 'Change parent',
@@ -2018,14 +2009,15 @@ class _TaskCardState extends State<_TaskCard> {
                 TextButton.icon(
                   onPressed: canEdit
                       ? () => unawaited(
-                            widget.controller.reparentTask(widget.record, null),
-                          )
+                          widget.controller.reparentTask(widget.record, null),
+                        )
                       : null,
                   icon: const Icon(Icons.format_indent_decrease),
                   label: const Text('Move to top level'),
                 ),
               OutlinedButton.icon(
-                onPressed: canEdit &&
+                onPressed:
+                    canEdit &&
                         widget.controller.calendars.any(
                           (calendar) =>
                               !calendar.isReadOnly &&
@@ -2102,11 +2094,11 @@ class _TaskCardState extends State<_TaskCard> {
                     : null,
                 onDeleted: canEdit && task.completedAt != null
                     ? () => unawaited(
-                          widget.controller.updateCompletedAt(
-                            widget.record,
-                            null,
-                          ),
-                        )
+                        widget.controller.updateCompletedAt(
+                          widget.record,
+                          null,
+                        ),
+                      )
                     : null,
                 deleteIcon: task.completedAt == null
                     ? null
@@ -2129,11 +2121,11 @@ class _TaskCardState extends State<_TaskCard> {
                       : null,
                   onChangeEnd: canEdit
                       ? (value) => unawaited(
-                            widget.controller.updateProgress(
-                              widget.record,
-                              value.round(),
-                            ),
-                          )
+                          widget.controller.updateProgress(
+                            widget.record,
+                            value.round(),
+                          ),
+                        )
                       : null,
                 ),
               ),
@@ -2178,8 +2170,9 @@ class _TaskCardState extends State<_TaskCard> {
               for (final reminder in task.reminders)
                 Chip(label: Text(_reminderLabel(context, reminder))),
               OutlinedButton.icon(
-                onPressed:
-                    canEdit ? () => unawaited(_manageReminders(context)) : null,
+                onPressed: canEdit
+                    ? () => unawaited(_manageReminders(context))
+                    : null,
                 icon: const Icon(Icons.notifications_outlined),
                 label: Text(
                   task.reminders.isEmpty ? 'Add reminders' : 'Manage reminders',
@@ -2258,15 +2251,10 @@ class _TaskCardState extends State<_TaskCard> {
               children: <Widget>[
                 TextButton.icon(
                   onPressed: () => unawaited(
-                    widget.controller.updatePinned(
-                      widget.record,
-                      !task.pinned,
-                    ),
+                    widget.controller.updatePinned(widget.record, !task.pinned),
                   ),
                   icon: Icon(
-                    task.pinned
-                        ? Icons.push_pin
-                        : Icons.push_pin_outlined,
+                    task.pinned ? Icons.push_pin : Icons.push_pin_outlined,
                   ),
                   label: Text(task.pinned ? 'Unpin task' : 'Pin task'),
                 ),
@@ -2316,12 +2304,12 @@ class _TaskCardState extends State<_TaskCard> {
           : null,
       onDeleted: canEdit && current != null
           ? () => unawaited(
-                widget.controller.updateTaskDate(
-                  widget.record,
-                  propertyName,
-                  null,
-                ),
-              )
+              widget.controller.updateTaskDate(
+                widget.record,
+                propertyName,
+                null,
+              ),
+            )
           : null,
       deleteIcon: current == null ? null : const Icon(Icons.close, size: 18),
     );
@@ -2330,12 +2318,13 @@ class _TaskCardState extends State<_TaskCard> {
   Widget _priorityChoice(String label, int? value, bool canEdit) {
     return ChoiceChip(
       label: Text(label),
-      selected: widget.record.task.priority == value ||
+      selected:
+          widget.record.task.priority == value ||
           (value == null && (widget.record.task.priority ?? 0) == 0),
       onSelected: canEdit
           ? (_) => unawaited(
-                widget.controller.updatePriority(widget.record, value),
-              )
+              widget.controller.updatePriority(widget.record, value),
+            )
           : null,
     );
   }
@@ -2361,7 +2350,7 @@ class _TaskCardState extends State<_TaskCard> {
       selected: widget.record.task.privacy == value,
       onSelected: canEdit && widget.controller.canEditPrivacy(widget.record)
           ? (_) =>
-              unawaited(widget.controller.updatePrivacy(widget.record, value))
+                unawaited(widget.controller.updatePrivacy(widget.record, value))
           : null,
     );
   }
@@ -2404,7 +2393,8 @@ class _TaskCardState extends State<_TaskCard> {
                           subtitle: candidate.task.parentUid == null
                               ? null
                               : const Text('Subtask'),
-                          selected: widget.record.task.parentUid ==
+                          selected:
+                              widget.record.task.parentUid ==
                               candidate.task.uid,
                           onTap: () =>
                               Navigator.pop(context, candidate.task.uid),
@@ -2429,10 +2419,8 @@ class _TaskCardState extends State<_TaskCard> {
   Future<void> _chooseCalendar(BuildContext context) async {
     final choices = widget.controller.calendars
         .where(
-          (calendar) => widget.controller.canMoveRecordTo(
-            widget.record,
-            calendar,
-          ),
+          (calendar) =>
+              widget.controller.canMoveRecordTo(widget.record, calendar),
         )
         .toList(growable: false);
     final selected = await showModalBottomSheet<String>(
@@ -2501,8 +2489,8 @@ class _TaskCardState extends State<_TaskCard> {
     final initialDate = current.isBefore(firstDate)
         ? firstDate
         : current.isAfter(now)
-            ? now
-            : current;
+        ? now
+        : current;
     final selectedDate = await showDatePicker(
       context: context,
       initialDate: initialDate,
@@ -2548,8 +2536,8 @@ class _TaskCardState extends State<_TaskCard> {
     final initialDate = requestedInitialDate.isBefore(firstDate)
         ? firstDate
         : requestedInitialDate.isAfter(lastDate)
-            ? lastDate
-            : requestedInitialDate;
+        ? lastDate
+        : requestedInitialDate;
     final selected = await showDatePicker(
       context: context,
       initialDate: initialDate,
@@ -2645,10 +2633,10 @@ class _TaskCardState extends State<_TaskCard> {
       builder: (context) => StatefulBuilder(
         builder: (context, setSheetState) {
           bool contains(CloudTaskReminder candidate) => selected.any(
-                (item) =>
-                    item.trigger == candidate.trigger &&
-                    item.relatedToEnd == candidate.relatedToEnd,
-              );
+            (item) =>
+                item.trigger == candidate.trigger &&
+                item.relatedToEnd == candidate.relatedToEnd,
+          );
           return SafeArea(
             child: SizedBox(
               height: MediaQuery.sizeOf(context).height * 0.72,
@@ -2796,10 +2784,10 @@ class _TaskCardState extends State<_TaskCard> {
                 Text(
                   descendants == 0
                       ? 'This removes the task from Nextcloud and every '
-                          'synced device.'
+                            'synced device.'
                       : 'This also removes $descendants '
-                          '${descendants == 1 ? 'subtask' : 'subtasks'} from '
-                          'Nextcloud and every synced device.',
+                            '${descendants == 1 ? 'subtask' : 'subtasks'} from '
+                            'Nextcloud and every synced device.',
                 ),
                 const SizedBox(height: 20),
                 FilledButton.tonalIcon(
@@ -2963,11 +2951,11 @@ class _TagEditorState extends State<_TagEditor> {
                   label: Text(category),
                   onDeleted: widget.canEdit
                       ? () => unawaited(
-                            widget.controller.updateCategories(
-                              widget.record,
-                              categories.where((item) => item != category),
-                            ),
-                          )
+                          widget.controller.updateCategories(
+                            widget.record,
+                            categories.where((item) => item != category),
+                          ),
+                        )
                       : null,
                 ),
             ],
@@ -2982,9 +2970,10 @@ class _TagEditorState extends State<_TagEditor> {
               spacing: 6,
               runSpacing: 6,
               children: <Widget>[
-                for (final tag in widget.controller.availableTags
-                    .where((tag) => !categories.contains(tag))
-                    .take(8))
+                for (final tag
+                    in widget.controller.availableTags
+                        .where((tag) => !categories.contains(tag))
+                        .take(8))
                   ActionChip(
                     avatar: const Icon(Icons.add, size: 16),
                     label: Text(tag),
@@ -3135,8 +3124,9 @@ Color? _calendarColor(String? source) {
     return null;
   }
   final rgb = int.tryParse(hex.substring(0, 6), radix: 16);
-  final alpha =
-      hex.length == 8 ? int.tryParse(hex.substring(6, 8), radix: 16) : 255;
+  final alpha = hex.length == 8
+      ? int.tryParse(hex.substring(6, 8), radix: 16)
+      : 255;
   if (rgb == null || alpha == null) {
     return null;
   }
@@ -3152,8 +3142,8 @@ String _dateLabel(CloudTaskDate date) {
   final hour = value.hour == 0
       ? 12
       : value.hour > 12
-          ? value.hour - 12
-          : value.hour;
+      ? value.hour - 12
+      : value.hour;
   final minute = value.minute.toString().padLeft(2, '0');
   final period = value.hour >= 12 ? 'PM' : 'AM';
   return '$day $hour:$minute $period';

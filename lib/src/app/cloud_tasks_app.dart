@@ -26,7 +26,8 @@ class _CloudTasksAppState extends State<CloudTasksApp> {
   void initState() {
     super.initState();
     _ownsController = widget.controller == null;
-    _controller = widget.controller ??
+    _controller =
+        widget.controller ??
         CloudTasksController(
           accountStore: SecureAccountStore(),
           taskStore: SqliteTaskStore(),
@@ -83,13 +84,8 @@ ThemeData _cloudTasksTheme(Brightness brightness) {
       surfaceTintColor: scheme.surfaceTint,
     ),
     inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
     ),
-    dividerTheme: DividerThemeData(
-      color: scheme.outlineVariant,
-      space: 1,
-    ),
+    dividerTheme: DividerThemeData(color: scheme.outlineVariant, space: 1),
   );
 }

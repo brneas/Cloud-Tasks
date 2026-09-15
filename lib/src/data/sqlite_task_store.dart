@@ -9,8 +9,8 @@ import 'package:sqflite/sqflite.dart';
 
 class SqliteTaskStore implements TaskStore {
   SqliteTaskStore({DatabaseFactory? factory, String? databasePath})
-      : _databaseFactory = factory,
-        _databasePath = databasePath;
+    : _databaseFactory = factory,
+      _databasePath = databasePath;
 
   final DatabaseFactory? _databaseFactory;
   final String? _databasePath;
@@ -23,7 +23,8 @@ class SqliteTaskStore implements TaskStore {
     }
 
     final factory = _databaseFactory ?? databaseFactory;
-    final resolvedPath = _databasePath ??
+    final resolvedPath =
+        _databasePath ??
         path.join(await factory.getDatabasesPath(), 'cloud_tasks.db');
     final opened = await factory.openDatabase(
       resolvedPath,
@@ -91,7 +92,8 @@ class SqliteTaskStore implements TaskStore {
       'calendars',
       where: 'account_id = ?',
       whereArgs: <Object?>[accountId],
-      orderBy: 'CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END, '
+      orderBy:
+          'CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END, '
           'sort_order ASC, display_name COLLATE NOCASE ASC',
     );
     return List<TaskCalendar>.unmodifiable(rows.map(_calendarFromRow));
@@ -180,7 +182,8 @@ GROUP BY tasks.calendar_id
       'tasks',
       where: 'calendar_id = ? AND is_deleted = 0',
       whereArgs: <Object?>[calendarId],
-      orderBy: 'CASE WHEN manual_order IS NULL THEN 1 ELSE 0 END, '
+      orderBy:
+          'CASE WHEN manual_order IS NULL THEN 1 ELSE 0 END, '
           'manual_order ASC, uid ASC',
     );
     return List<TaskRecord>.unmodifiable(rows.map(_taskRecordFromRow));
@@ -192,13 +195,15 @@ GROUP BY tasks.calendar_id
     required String? parentUid,
   }) async {
     final db = await database;
-    final parentClause =
-        parentUid == null ? 'parent_uid IS NULL' : 'parent_uid = ?';
+    final parentClause = parentUid == null
+        ? 'parent_uid IS NULL'
+        : 'parent_uid = ?';
     final rows = await db.query(
       'tasks',
       where: 'calendar_id = ? AND $parentClause AND is_deleted = 0',
       whereArgs: <Object?>[calendarId, if (parentUid != null) parentUid],
-      orderBy: 'CASE WHEN manual_order IS NULL THEN 1 ELSE 0 END, '
+      orderBy:
+          'CASE WHEN manual_order IS NULL THEN 1 ELSE 0 END, '
           'manual_order ASC, uid ASC',
     );
     return List<TaskRecord>.unmodifiable(rows.map(_taskRecordFromRow));
@@ -278,8 +283,8 @@ GROUP BY tasks.calendar_id
 
         final effectiveType =
             hasPendingCreate && operation.type == PendingOperationType.update
-                ? PendingOperationType.create
-                : operation.type;
+            ? PendingOperationType.create
+            : operation.type;
         final changedProperties = <String>{...operation.changedProperties};
         var createdAt = operation.createdAt.toUtc();
         var batchId = operation.batchId;
@@ -313,8 +318,9 @@ GROUP BY tasks.calendar_id
 
         final values = _taskValues(record)
           ..['is_dirty'] = 1
-          ..['is_deleted'] =
-              effectiveType == PendingOperationType.delete ? 1 : 0;
+          ..['is_deleted'] = effectiveType == PendingOperationType.delete
+              ? 1
+              : 0;
         await _upsert(
           transaction,
           'tasks',
@@ -718,8 +724,9 @@ CREATE TABLE app_preferences (
       href: Uri.parse(row['href']! as String),
       etag: row['etag'] as String?,
       rawDocument: rawDocument,
-      baseDocument:
-          baseValue == null ? null : ICalendarDocument.parse(baseValue),
+      baseDocument: baseValue == null
+          ? null
+          : ICalendarDocument.parse(baseValue),
       isDirty: row['is_dirty'] == 1,
     );
   }
@@ -743,11 +750,9 @@ CREATE TABLE app_preferences (
   }
 
   static String _encodeChangedProperties(Iterable<String> properties) {
-    final normalized = properties
-        .map((property) => property.toUpperCase())
-        .toSet()
-        .toList()
-      ..sort();
+    final normalized =
+        properties.map((property) => property.toUpperCase()).toSet().toList()
+          ..sort();
     return normalized.join(',');
   }
 

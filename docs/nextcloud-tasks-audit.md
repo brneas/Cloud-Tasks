@@ -1,6 +1,6 @@
 # Nextcloud Tasks 0.18.1 functional audit
 
-This audit compares Cloud Tasks 1.0.0+19 with the portable behavior in
+This audit compares Cloud Tasks 1.0.0+20 with the portable behavior in
 Nextcloud Tasks 0.18.1 and the current 0.18.1 source tree reviewed on
 2026-09-15.
 

@@ -75,7 +75,13 @@ class TaskViewFilter {
 
   DateTime localDate(CloudTaskDate date) {
     final value = date.value.isUtc ? date.value.toLocal() : date.value;
-    return DateTime(value.year, value.month, value.day, value.hour, value.minute);
+    return DateTime(
+      value.year,
+      value.month,
+      value.day,
+      value.hour,
+      value.minute,
+    );
   }
 
   bool _dateBefore(CloudTaskDate? date, DateTime limit) =>

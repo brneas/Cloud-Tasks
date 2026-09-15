@@ -13,10 +13,11 @@ void main() {
         CloudTask(uid: 'second', summary: 'Second', sortOrder: 200),
       ];
 
-      expect(
-        service.sort(tasks).map((task) => task.uid),
-        <String>['first', 'second', 'third'],
-      );
+      expect(service.sort(tasks).map((task) => task.uid), <String>[
+        'first',
+        'second',
+        'third',
+      ]);
     });
 
     test('keeps tasks without a server order deterministic and last', () {
@@ -26,21 +27,16 @@ void main() {
         CloudTask(uid: 'ordered', summary: 'Ordered', sortOrder: 5),
       ];
 
-      expect(
-        service.sort(tasks).map((task) => task.uid),
-        <String>['ordered', 'a', 'z'],
-      );
+      expect(service.sort(tasks).map((task) => task.uid), <String>[
+        'ordered',
+        'a',
+        'z',
+      ]);
     });
 
     test('allocates sparse positions without rewriting siblings', () {
-      expect(
-        service.positionBetween(previous: 100, next: 200),
-        150,
-      );
-      expect(
-        service.positionBetween(previous: 100, next: 101),
-        isNull,
-      );
+      expect(service.positionBetween(previous: 100, next: 200), 150);
+      expect(service.positionBetween(previous: 100, next: 101), isNull);
     });
 
     test('reorders by changing only the moved task when a gap exists', () {
@@ -52,18 +48,12 @@ void main() {
 
       final reordered = service.reorder(tasks, 0, 2);
 
-      expect(
-        reordered.map((task) => task.uid),
-        <String>['b', 'a', 'c'],
-      );
-      expect(
-        reordered.map((task) => task.sortOrder),
-        <int>[
-          ManualOrderService.spacing * 2,
-          ManualOrderService.spacing * 2 + ManualOrderService.spacing ~/ 2,
-          ManualOrderService.spacing * 3,
-        ],
-      );
+      expect(reordered.map((task) => task.uid), <String>['b', 'a', 'c']);
+      expect(reordered.map((task) => task.sortOrder), <int>[
+        ManualOrderService.spacing * 2,
+        ManualOrderService.spacing * 2 + ManualOrderService.spacing ~/ 2,
+        ManualOrderService.spacing * 3,
+      ]);
     });
 
     test('reindexes a sibling group only when no integer gap remains', () {
@@ -75,18 +65,12 @@ void main() {
 
       final reordered = service.reorder(tasks, 2, 1);
 
-      expect(
-        reordered.map((task) => task.uid),
-        <String>['a', 'c', 'b'],
-      );
-      expect(
-        reordered.map((task) => task.sortOrder),
-        <int>[
-          ManualOrderService.spacing,
-          ManualOrderService.spacing * 2,
-          ManualOrderService.spacing * 3,
-        ],
-      );
+      expect(reordered.map((task) => task.uid), <String>['a', 'c', 'b']);
+      expect(reordered.map((task) => task.sortOrder), <int>[
+        ManualOrderService.spacing,
+        ManualOrderService.spacing * 2,
+        ManualOrderService.spacing * 3,
+      ]);
     });
 
     test('converts a descending drag back to ascending server order', () {
@@ -103,10 +87,7 @@ void main() {
         descending: true,
       );
 
-      expect(
-        ascending.map((task) => task.uid),
-        <String>['a', 'c', 'b'],
-      );
+      expect(ascending.map((task) => task.uid), <String>['a', 'c', 'b']);
       expect(
         service.sort(ascending, descending: true).map((task) => task.uid),
         <String>['b', 'c', 'a'],
@@ -131,50 +112,46 @@ void main() {
         service.sort(ascending, descending: true).map((task) => task.uid),
         <String>['c', 'b', 'a'],
       );
-      expect(
-        ascending.map((task) => task.sortOrder),
-        <int>[
-          ManualOrderService.spacing,
-          ManualOrderService.spacing * 2,
-          ManualOrderService.spacing * 3,
-        ],
-      );
-    });
-
-    test('reorders active tasks without colliding with hidden completed tasks',
-        () {
-      const siblings = <CloudTask>[
-        CloudTask(uid: 'a', summary: 'A', sortOrder: 1048576),
-        CloudTask(
-          uid: 'done',
-          summary: 'Done',
-          sortOrder: 2097152,
-          status: CloudTaskStatus.completed,
-        ),
-        CloudTask(uid: 'b', summary: 'B', sortOrder: 3145728),
-      ];
-
-      final reordered = service.reorderDisplayedSubset(
-        siblings,
-        const <String>['a', 'b'],
-        1,
-        0,
-        descending: false,
-      );
-
-      expect(
-        reordered.map((task) => task.uid),
-        <String>['b', 'done', 'a'],
-      );
-      expect(
-        reordered.map((task) => task.sortOrder).toSet().length,
-        siblings.length,
-      );
-      expect(
-        reordered.singleWhere((task) => task.uid == 'done').sortOrder,
+      expect(ascending.map((task) => task.sortOrder), <int>[
+        ManualOrderService.spacing,
         ManualOrderService.spacing * 2,
-      );
+        ManualOrderService.spacing * 3,
+      ]);
     });
+
+    test(
+      'reorders active tasks without colliding with hidden completed tasks',
+      () {
+        const siblings = <CloudTask>[
+          CloudTask(uid: 'a', summary: 'A', sortOrder: 1048576),
+          CloudTask(
+            uid: 'done',
+            summary: 'Done',
+            sortOrder: 2097152,
+            status: CloudTaskStatus.completed,
+          ),
+          CloudTask(uid: 'b', summary: 'B', sortOrder: 3145728),
+        ];
+
+        final reordered = service.reorderDisplayedSubset(
+          siblings,
+          const <String>['a', 'b'],
+          1,
+          0,
+          descending: false,
+        );
+
+        expect(reordered.map((task) => task.uid), <String>['b', 'done', 'a']);
+        expect(
+          reordered.map((task) => task.sortOrder).toSet().length,
+          siblings.length,
+        );
+        expect(
+          reordered.singleWhere((task) => task.uid == 'done').sortOrder,
+          ManualOrderService.spacing * 2,
+        );
+      },
+    );
 
     test('preserves hidden sibling slots in descending display order', () {
       const siblings = <CloudTask>[
@@ -226,18 +203,12 @@ void main() {
         descending: false,
       );
 
-      expect(
-        reordered.map((task) => task.uid),
-        <String>['b', 'done', 'a'],
-      );
-      expect(
-        reordered.map((task) => task.sortOrder),
-        <int>[
-          ManualOrderService.spacing,
-          ManualOrderService.spacing * 2,
-          ManualOrderService.spacing * 3,
-        ],
-      );
+      expect(reordered.map((task) => task.uid), <String>['b', 'done', 'a']);
+      expect(reordered.map((task) => task.sortOrder), <int>[
+        ManualOrderService.spacing,
+        ManualOrderService.spacing * 2,
+        ManualOrderService.spacing * 3,
+      ]);
     });
 
     test('inserts new tasks at the top of either visible direction', () {
@@ -258,12 +229,15 @@ void main() {
         descending: true,
       );
 
+      expect(service.sort(ascendingResult).map((task) => task.uid), <String>[
+        'new',
+        'a',
+        'b',
+      ]);
       expect(
-        service.sort(ascendingResult).map((task) => task.uid),
-        <String>['new', 'a', 'b'],
-      );
-      expect(
-        service.sort(descendingResult, descending: true).map((task) => task.uid),
+        service
+            .sort(descendingResult, descending: true)
+            .map((task) => task.uid),
         <String>['new', 'b', 'a'],
       );
     });

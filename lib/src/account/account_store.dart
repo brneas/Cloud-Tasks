@@ -13,7 +13,7 @@ abstract interface class AccountStore {
 
 class SecureAccountStore implements AccountStore {
   SecureAccountStore({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage();
+    : _storage = storage ?? const FlutterSecureStorage();
 
   static const _accountsKey = 'cloud_tasks.nextcloud_accounts.v1';
 

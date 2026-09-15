@@ -17,9 +17,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: TaskCalendarNavigation(controller: controller),
-        ),
+        home: Scaffold(body: TaskCalendarNavigation(controller: controller)),
       ),
     );
 

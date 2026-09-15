@@ -20,20 +20,23 @@ void main() {
     expect(changed.lastSmartView, SmartTaskView.today);
   });
 
-  test('copyWith can clear remembered navigation without resetting sorting', () {
-    const original = CloudTasksPreferences(
-      descendingManualOrder: true,
-      lastCalendarId: 'personal',
-      lastSmartView: SmartTaskView.completed,
-    );
+  test(
+    'copyWith can clear remembered navigation without resetting sorting',
+    () {
+      const original = CloudTasksPreferences(
+        descendingManualOrder: true,
+        lastCalendarId: 'personal',
+        lastSmartView: SmartTaskView.completed,
+      );
 
-    final cleared = original.copyWith(
-      clearLastCalendarId: true,
-      clearLastSmartView: true,
-    );
+      final cleared = original.copyWith(
+        clearLastCalendarId: true,
+        clearLastSmartView: true,
+      );
 
-    expect(cleared.descendingManualOrder, isTrue);
-    expect(cleared.lastCalendarId, isNull);
-    expect(cleared.lastSmartView, isNull);
-  });
+      expect(cleared.descendingManualOrder, isTrue);
+      expect(cleared.lastCalendarId, isNull);
+      expect(cleared.lastSmartView, isNull);
+    },
+  );
 }

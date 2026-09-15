@@ -69,7 +69,7 @@ class VTodoCodec {
       ),
       pinned:
           document.firstProperty('X-PINNED')?.value.trim().toLowerCase() ==
-              'true',
+          'true',
       createdAt: _decodeTimestamp(document.firstProperty('CREATED')?.value),
       lastModifiedAt: _decodeTimestamp(
         document.firstProperty('LAST-MODIFIED')?.value ??
@@ -295,8 +295,9 @@ class VTodoCodec {
       final relationType = property.parameters['RELTYPE']?.toUpperCase();
       return relationType == null || relationType == 'PARENT';
     });
-    final normalizedParent =
-        parentUid?.replaceAll(RegExp(r'[\r\n]'), '').trim();
+    final normalizedParent = parentUid
+        ?.replaceAll(RegExp(r'[\r\n]'), '')
+        .trim();
     if (normalizedParent != null && normalizedParent.isNotEmpty) {
       updated = updated.addProperty(
         'RELATED-TO',
@@ -390,8 +391,10 @@ class VTodoCodec {
     String? rule, {
     required DateTime now,
   }) {
-    final normalized =
-        rule?.replaceAll(RegExp(r'[\r\n]'), '').trim().toUpperCase();
+    final normalized = rule
+        ?.replaceAll(RegExp(r'[\r\n]'), '')
+        .trim()
+        .toUpperCase();
     final updated = normalized == null || normalized.isEmpty
         ? document.removeProperties('RRULE')
         : document.replaceProperty('RRULE', normalized);
@@ -445,8 +448,8 @@ class VTodoCodec {
       final triggerParameters = isAbsolute
           ? ';VALUE=DATE-TIME'
           : reminder.relatedToEnd
-              ? ';RELATED=END'
-              : '';
+          ? ';RELATED=END'
+          : '';
       replacement.addAll(<String>[
         'BEGIN:VALARM',
         'ACTION:${action.isEmpty ? 'DISPLAY' : action}',
@@ -509,10 +512,7 @@ class VTodoCodec {
       final updated = document
           .setFirstPropertyValue('STATUS', 'COMPLETED')
           .setFirstPropertyValue('PERCENT-COMPLETE', '100')
-          .setFirstPropertyValue(
-            'COMPLETED',
-            formatUtcDateTime(completedAt),
-          );
+          .setFirstPropertyValue('COMPLETED', formatUtcDateTime(completedAt));
       return stamp(updated, now: now);
     }
     final updated = document
@@ -530,8 +530,8 @@ class VTodoCodec {
     final status = percentComplete == 100
         ? CloudTaskStatus.completed
         : percentComplete == 0
-            ? CloudTaskStatus.needsAction
-            : CloudTaskStatus.inProcess;
+        ? CloudTaskStatus.needsAction
+        : CloudTaskStatus.inProcess;
     return writeStatusAndProgress(
       document,
       status: status,
@@ -600,8 +600,9 @@ class VTodoCodec {
       return null;
     }
     final value = property.value.trim();
-    final valueType =
-        property.parameters['VALUE']?.replaceAll('"', '').toUpperCase();
+    final valueType = property.parameters['VALUE']
+        ?.replaceAll('"', '')
+        .toUpperCase();
     final isAllDay =
         valueType == 'DATE' || (value.length == 8 && !value.contains('T'));
     try {
@@ -725,7 +726,8 @@ class VTodoCodec {
         if (trigger == null || trigger.value.trim().isEmpty) {
           continue;
         }
-        final action = alarm
+        final action =
+            alarm
                 .firstProperty('ACTION', componentName: 'VALARM')
                 ?.value
                 .trim()

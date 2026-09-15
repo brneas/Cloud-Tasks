@@ -107,10 +107,7 @@ class ICalendarDocument {
       parameters: parameters ?? const <String, String>{},
       value: value,
     );
-    updated.insert(
-      _propertyInsertionIndex(range),
-      property.toLogicalLine(),
-    );
+    updated.insert(_propertyInsertionIndex(range), property.toLogicalLine());
     return ICalendarDocument._(List<String>.unmodifiable(updated));
   }
 
@@ -204,10 +201,7 @@ class ICalendarDocument {
       parameters: parameters,
     );
     final updated = List<String>.of(_lines)
-      ..insert(
-        _propertyInsertionIndex(range),
-        property.toLogicalLine(),
-      );
+      ..insert(_propertyInsertionIndex(range), property.toLogicalLine());
     return ICalendarDocument._(List<String>.unmodifiable(updated));
   }
 
@@ -409,9 +403,7 @@ class ICalendarDocument {
     final normalizedName = componentName.toUpperCase();
     final begin = 'BEGIN:$normalizedName';
     final end = 'END:$normalizedName';
-    final startIndex = _lines.indexWhere(
-      (line) => line.toUpperCase() == begin,
-    );
+    final startIndex = _lines.indexWhere((line) => line.toUpperCase() == begin);
     if (startIndex < 0) {
       throw FormatException('Missing $begin component.');
     }
@@ -484,8 +476,9 @@ class ICalendarProperty {
     for (final part in headerParts.skip(1)) {
       final equals = part.indexOf('=');
       if (equals > 0) {
-        parameters[part.substring(0, equals).toUpperCase()] =
-            part.substring(equals + 1);
+        parameters[part.substring(0, equals).toUpperCase()] = part.substring(
+          equals + 1,
+        );
       }
     }
 

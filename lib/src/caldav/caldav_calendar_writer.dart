@@ -76,9 +76,7 @@ class CalDavCalendarWriter {
     final response = await _http.request(
       'DELETE',
       calendar.href,
-      headers: const <String, String>{
-        'Accept': 'application/xml, text/xml',
-      },
+      headers: const <String, String>{'Accept': 'application/xml, text/xml'},
     );
     if (response.statusCode == 404) {
       return;
@@ -133,11 +131,7 @@ class CalDavCalendarWriter {
         '</d:propertyupdate>';
   }
 
-  static String _properties(
-    String name,
-    String color,
-    int order,
-  ) {
+  static String _properties(String name, String color, int order) {
     final safeName = const HtmlEscape(HtmlEscapeMode.element).convert(name);
     return '<d:displayname>$safeName</d:displayname>'
         '<a:calendar-color>${_normalizedColor(color)}</a:calendar-color>'

@@ -26,7 +26,7 @@ updated without Google Play.
 
 ## Requirements
 
-- Android build generated with Flutter 3.38.1 or newer, Dart 3.10 or newer and
+- Android build generated with Flutter 3.44.0 or newer, Dart 3.12 or newer and
   JDK 17.
 - A supported Nextcloud instance with a CalDAV task collection.
 - The Android manifest and Gradle setup documented in

@@ -55,8 +55,7 @@ void main() {
     expect(depths['/remote.php/dav/calendars/alice/'], '1');
   });
 
-  test('distinguishes a shared read-only task list from an owned list',
-      () async {
+  test('distinguishes a shared read-only task list from an owned list', () async {
     final sharedResponse = _calendarResponse
         .replaceFirst('principals/users/alice/', 'principals/users/bob/')
         .replaceFirst('<d:write-content/>', '<d:read/>')
@@ -85,9 +84,7 @@ void main() {
 
     final calendar = (await CalDavDiscoveryService(
       DavHttpClient(client),
-    ).discover(account))
-        .calendars
-        .single;
+    ).discover(account)).calendars.single;
 
     expect(calendar.isSharedWithMe, isTrue);
     expect(calendar.isReadOnly, isTrue);

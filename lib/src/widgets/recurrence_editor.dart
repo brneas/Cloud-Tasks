@@ -17,12 +17,7 @@ class RecurrenceEditor extends StatefulWidget {
 }
 
 class _RecurrenceEditorState extends State<RecurrenceEditor> {
-  static const _frequencies = <String>[
-    'DAILY',
-    'WEEKLY',
-    'MONTHLY',
-    'YEARLY',
-  ];
+  static const _frequencies = <String>['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'];
   static const _weekdayCodes = <int, String>{
     DateTime.monday: 'MO',
     DateTime.tuesday: 'TU',
@@ -117,7 +112,7 @@ class _RecurrenceEditorState extends State<RecurrenceEditor> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _frequency,
+                initialValue: _frequency,
                 decoration: const InputDecoration(
                   labelText: 'Frequency',
                   border: OutlineInputBorder(),
@@ -129,9 +124,8 @@ class _RecurrenceEditorState extends State<RecurrenceEditor> {
                       child: Text(_frequencyLabel(frequency)),
                     ),
                 ],
-                onChanged: (value) => setState(
-                  () => _frequency = value ?? _frequency,
-                ),
+                onChanged: (value) =>
+                    setState(() => _frequency = value ?? _frequency),
               ),
               const SizedBox(height: 12),
               TextField(
@@ -182,14 +176,13 @@ class _RecurrenceEditorState extends State<RecurrenceEditor> {
                     ),
                   ],
                   selected: <bool>{_monthByWeekday},
-                  onSelectionChanged: (value) => setState(
-                    () => _monthByWeekday = value.first,
-                  ),
+                  onSelectionChanged: (value) =>
+                      setState(() => _monthByWeekday = value.first),
                 ),
               ],
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _endMode,
+                initialValue: _endMode,
                 decoration: const InputDecoration(
                   labelText: 'Ends',
                   border: OutlineInputBorder(),
@@ -202,9 +195,8 @@ class _RecurrenceEditorState extends State<RecurrenceEditor> {
                   ),
                   DropdownMenuItem(value: 'until', child: Text('On a date')),
                 ],
-                onChanged: (value) => setState(
-                  () => _endMode = value ?? _endMode,
-                ),
+                onChanged: (value) =>
+                    setState(() => _endMode = value ?? _endMode),
               ),
               if (_endMode == 'count') ...<Widget>[
                 const SizedBox(height: 12),
@@ -225,9 +217,9 @@ class _RecurrenceEditorState extends State<RecurrenceEditor> {
                   label: Text(
                     _until == null
                         ? 'Choose final date'
-                        : MaterialLocalizations.of(context).formatMediumDate(
-                            _until!,
-                          ),
+                        : MaterialLocalizations.of(
+                            context,
+                          ).formatMediumDate(_until!),
                   ),
                 ),
               ],
@@ -297,9 +289,7 @@ class _RecurrenceEditorState extends State<RecurrenceEditor> {
       return;
     }
     if (_endMode == 'count' && (count == null || count < 1 || count > 9999)) {
-      setState(
-        () => _validationMessage = 'Use 1 to 9999 occurrences.',
-      );
+      setState(() => _validationMessage = 'Use 1 to 9999 occurrences.');
       return;
     }
     if (_endMode == 'until' && _until == null) {
@@ -345,8 +335,9 @@ class _RecurrenceEditorState extends State<RecurrenceEditor> {
       if (separator <= 0 || separator == part.length - 1) {
         continue;
       }
-      result[part.substring(0, separator).toUpperCase()] =
-          part.substring(separator + 1).toUpperCase();
+      result[part.substring(0, separator).toUpperCase()] = part
+          .substring(separator + 1)
+          .toUpperCase();
     }
     return result;
   }
@@ -396,36 +387,39 @@ class _RecurrenceEditorState extends State<RecurrenceEditor> {
     final ordinal = _weekdayOrdinal(value);
     final ordinalLabel = ordinal == -1
         ? 'last'
-        : <int, String>{1: 'first', 2: 'second', 3: 'third', 4: 'fourth'}[
-              ordinal
-            ] ??
-            '${ordinal}th';
+        : <int, String>{
+                1: 'first',
+                2: 'second',
+                3: 'third',
+                4: 'fourth',
+              }[ordinal] ??
+              '${ordinal}th';
     return '$ordinalLabel ${_longWeekday(value.weekday)}';
   }
 
   static String _longWeekday(int weekday) => const <int, String>{
-        DateTime.monday: 'Monday',
-        DateTime.tuesday: 'Tuesday',
-        DateTime.wednesday: 'Wednesday',
-        DateTime.thursday: 'Thursday',
-        DateTime.friday: 'Friday',
-        DateTime.saturday: 'Saturday',
-        DateTime.sunday: 'Sunday',
-      }[weekday]!;
+    DateTime.monday: 'Monday',
+    DateTime.tuesday: 'Tuesday',
+    DateTime.wednesday: 'Wednesday',
+    DateTime.thursday: 'Thursday',
+    DateTime.friday: 'Friday',
+    DateTime.saturday: 'Saturday',
+    DateTime.sunday: 'Sunday',
+  }[weekday]!;
 
   static String _frequencyLabel(String frequency) => switch (frequency) {
-        'DAILY' => 'Daily',
-        'WEEKLY' => 'Weekly',
-        'MONTHLY' => 'Monthly',
-        'YEARLY' => 'Yearly',
-        _ => frequency,
-      };
+    'DAILY' => 'Daily',
+    'WEEKLY' => 'Weekly',
+    'MONTHLY' => 'Monthly',
+    'YEARLY' => 'Yearly',
+    _ => frequency,
+  };
 
   static String _intervalUnit(String frequency) => switch (frequency) {
-        'DAILY' => 'days',
-        'WEEKLY' => 'weeks',
-        'MONTHLY' => 'months',
-        'YEARLY' => 'years',
-        _ => '',
-      };
+    'DAILY' => 'days',
+    'WEEKLY' => 'weeks',
+    'MONTHLY' => 'months',
+    'YEARLY' => 'years',
+    _ => '',
+  };
 }

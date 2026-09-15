@@ -6,15 +6,10 @@ import 'package:cloud_tasks/src/network/dav_http_client.dart';
 import 'package:cloud_tasks/src/sync/sync_contracts.dart';
 
 class CalDavTaskWriter {
-  const CalDavTaskWriter(
-    this._http, {
-    VTodoCodec codec = const VTodoCodec(),
-  }) : _codec = codec;
+  const CalDavTaskWriter(this._http, {VTodoCodec codec = const VTodoCodec()})
+    : _codec = codec;
 
-  static const _timestampProperties = <String>{
-    'DTSTAMP',
-    'LAST-MODIFIED',
-  };
+  static const _timestampProperties = <String>{'DTSTAMP', 'LAST-MODIFIED'};
 
   final DavHttpClient _http;
   final VTodoCodec _codec;
@@ -77,12 +72,7 @@ class CalDavTaskWriter {
         normalizedProperties,
       );
     }
-    return _putOnce(
-      localRecord,
-      etag,
-      normalizedProperties,
-      mayRebase: true,
-    );
+    return _putOnce(localRecord, etag, normalizedProperties, mayRebase: true);
   }
 
   Future<void> delete(TaskRecord localRecord) async {
@@ -276,10 +266,7 @@ class CalDavTaskWriter {
     String etag,
   ) {
     return TaskRecord(
-      task: _codec.decode(
-        document,
-        calendarId: previous.task.calendarId,
-      ),
+      task: _codec.decode(document, calendarId: previous.task.calendarId),
       href: previous.href,
       etag: etag,
       rawDocument: document,
@@ -358,6 +345,5 @@ class TaskWriteConflict implements Exception {
   final Set<String> changedProperties;
 
   @override
-  String toString() =>
-      'The task changed on another device in the same field.';
+  String toString() => 'The task changed on another device in the same field.';
 }

@@ -45,9 +45,8 @@ void main() {
 
   test('rejects an iCalendar file without tasks', () {
     expect(
-      () => archive.decode(
-        'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n',
-      ),
+      () =>
+          archive.decode('BEGIN:VCALENDAR\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n'),
       throwsFormatException,
     );
   });

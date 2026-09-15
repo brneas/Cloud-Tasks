@@ -5,7 +5,7 @@ Cloud Tasks is a privacy-respecting, offline-first Android client for
 to a user-selected Nextcloud server, includes no analytics or advertising, and
 keeps manual task order synchronized with the Nextcloud web app.
 
-Version **1.0.0+19** is the first stable release. The permanent Android
+Version **1.0.0+20** is the first stable release. The permanent Android
 application ID is `org.tecdesigns.cloud_tasks` and the launcher name is
 **Cloud Tasks**.
 
@@ -45,7 +45,7 @@ See [Security and privacy](docs/security.md) for the complete data-flow model.
 
 ## Requirements
 
-- Flutter 3.38.1 or newer and Dart 3.10 or newer
+- Flutter 3.44.0 or newer and Dart 3.12 or newer
 - JDK 17
 - A supported Nextcloud instance with at least one CalDAV task collection
 - Android 6.0 (API 23) or newer

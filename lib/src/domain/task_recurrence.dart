@@ -56,13 +56,13 @@ class TaskRecurrenceService {
   }
 
   static DateTime _asRuleDate(DateTime value) => DateTime.utc(
-        value.year,
-        value.month,
-        value.day,
-        value.hour,
-        value.minute,
-        value.second,
-      );
+    value.year,
+    value.month,
+    value.day,
+    value.hour,
+    value.minute,
+    value.second,
+  );
 
   static CloudTaskDate? _shift(CloudTaskDate? source, Duration delta) {
     if (source == null) {

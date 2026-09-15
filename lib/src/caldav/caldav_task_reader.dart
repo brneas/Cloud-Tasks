@@ -8,7 +8,7 @@ import 'package:xml/xml.dart';
 
 class CalDavTaskReader {
   const CalDavTaskReader(this._http, {VTodoCodec codec = const VTodoCodec()})
-      : _codec = codec;
+    : _codec = codec;
 
   final DavHttpClient _http;
   final VTodoCodec _codec;
@@ -101,9 +101,11 @@ class CalDavTaskReader {
       );
       final hasMissingProperty = responseElement
           .findElements('propstat', namespace: davNamespace)
-          .any((propstat) => RegExp(r'\s404\s').hasMatch(
-                elementText(propstat, 'status', namespace: davNamespace) ?? '',
-              ));
+          .any(
+            (propstat) => RegExp(r'\s404\s').hasMatch(
+              elementText(propstat, 'status', namespace: davNamespace) ?? '',
+            ),
+          );
       if (RegExp(r'\s404\s').hasMatch(status ?? '') || hasMissingProperty) {
         deleted.add(resolveDavHref(requestUrl, hrefText));
       }
@@ -112,7 +114,8 @@ class CalDavTaskReader {
     return CalendarDelta(
       changed: List<TaskRecord>.unmodifiable(changed),
       deletedHrefs: List<Uri>.unmodifiable(deleted),
-      nextSyncToken: elementText(
+      nextSyncToken:
+          elementText(
             document.rootElement,
             'sync-token',
             namespace: davNamespace,

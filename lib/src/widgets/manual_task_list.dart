@@ -3,10 +3,7 @@ import 'package:cloud_tasks/src/ordering/manual_order_service.dart';
 import 'package:flutter/material.dart';
 
 class ManualTaskList extends StatefulWidget {
-  const ManualTaskList({
-    required this.initialTasks,
-    super.key,
-  });
+  const ManualTaskList({required this.initialTasks, super.key});
 
   final List<CloudTask> initialTasks;
 
@@ -29,7 +26,7 @@ class _ManualTaskListState extends State<ManualTaskList> {
     return ReorderableListView.builder(
       buildDefaultDragHandles: true,
       itemCount: _tasks.length,
-      onReorder: _reorder,
+      onReorderItem: _reorder,
       itemBuilder: (context, index) {
         final task = _tasks[index];
         return ListTile(
@@ -44,8 +41,9 @@ class _ManualTaskListState extends State<ManualTaskList> {
   }
 
   void _reorder(int oldIndex, int newIndex) {
+    final legacyNewIndex = newIndex > oldIndex ? newIndex + 1 : newIndex;
     setState(() {
-      _tasks = _ordering.reorder(_tasks, oldIndex, newIndex);
+      _tasks = _ordering.reorder(_tasks, oldIndex, legacyNewIndex);
     });
   }
 }
