@@ -2,6 +2,8 @@
 
 ## 1.0.0
 
+- Pinned the Android minimum to API 24 and corrected the public compatibility
+  documentation.
 - Updated the release toolchain to Flutter 3.44 and Dart 3.12 and migrated
   deprecated form, color and reorder APIs without changing manual-order
   behavior.
