@@ -41,13 +41,15 @@ class TaskNotificationPlanner {
         if (scheduledAt == null || !scheduledAt.isAfter(now)) {
           continue;
         }
-        final key = '${task.calendarId ?? ''}\n${task.uid}\n$index\n'
+        final key =
+            '${task.calendarId ?? ''}\n${task.uid}\n$index\n'
             '${reminder.relatedToEnd}\n${reminder.trigger}';
         final id = stableId(key);
         desired[id] = TaskNotificationPlan(
           id: id,
           title: task.summary.isEmpty ? 'Task reminder' : task.summary,
-          body: reminder.description ??
+          body:
+              reminder.description ??
               (reminder.relatedToEnd
                   ? 'This task is due soon.'
                   : 'This task starts soon.'),

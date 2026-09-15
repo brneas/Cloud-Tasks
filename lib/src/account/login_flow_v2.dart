@@ -13,9 +13,9 @@ class LoginFlowV2 {
     PollDelay? delay,
     this.pollInterval = const Duration(seconds: 2),
     this.maxPollAttempts = 600,
-  })  : _client = client,
-        _openBrowser = openBrowser,
-        _delay = delay ?? Future<void>.delayed;
+  }) : _client = client,
+       _openBrowser = openBrowser,
+       _delay = delay ?? Future<void>.delayed;
 
   final http.Client _client;
   final BrowserLauncher _openBrowser;
@@ -131,9 +131,7 @@ class LoginFlowV2 {
 
     final parsed = Uri.tryParse(value);
     if (parsed == null || parsed.host.isEmpty || parsed.userInfo.isNotEmpty) {
-      throw const LoginFlowException(
-        'Enter a valid Nextcloud server address.',
-      );
+      throw const LoginFlowException('Enter a valid Nextcloud server address.');
     }
     if (parsed.scheme.toLowerCase() != 'https') {
       throw const LoginFlowException(
@@ -153,7 +151,11 @@ class LoginFlowV2 {
   static Uri appendPath(Uri base, String relativePath) {
     final basePath = base.path.replaceAll(RegExp(r'/+$'), '');
     final relative = relativePath.replaceAll(RegExp(r'^/+'), '');
-    return base.replace(path: '$basePath/$relative', query: null, fragment: null);
+    return base.replace(
+      path: '$basePath/$relative',
+      query: null,
+      fragment: null,
+    );
   }
 
   static Uri _httpsEndpoint(String value, String label) {
@@ -162,9 +164,7 @@ class LoginFlowV2 {
         parsed.scheme.toLowerCase() != 'https' ||
         parsed.host.isEmpty ||
         parsed.userInfo.isNotEmpty) {
-      throw LoginFlowException(
-        'Nextcloud returned an invalid $label address.',
-      );
+      throw LoginFlowException('Nextcloud returned an invalid $label address.');
     }
     return parsed;
   }

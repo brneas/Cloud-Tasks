@@ -22,7 +22,7 @@ class NoopTaskNotificationScheduler implements TaskNotificationScheduler {
 
 class AndroidTaskNotificationScheduler implements TaskNotificationScheduler {
   AndroidTaskNotificationScheduler({FlutterLocalNotificationsPlugin? plugin})
-      : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
+    : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
   static const _channelId = 'cloud_tasks_reminders';
   static const _channelName = 'Task reminders';
@@ -67,7 +67,8 @@ class AndroidTaskNotificationScheduler implements TaskNotificationScheduler {
     if (!_permissionRequested) {
       await _plugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.requestNotificationsPermission();
       _permissionRequested = true;
     }
@@ -104,5 +105,4 @@ class AndroidTaskNotificationScheduler implements TaskNotificationScheduler {
     await _initialize();
     await _plugin.cancelAll();
   }
-
 }

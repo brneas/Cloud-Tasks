@@ -63,13 +63,7 @@ void main() {
   });
 
   test('shared recipients cannot change task classification', () {
-    expect(
-      policy.canEditPrivacy(calendarSharedWithMe: true),
-      isFalse,
-    );
-    expect(
-      policy.canEditPrivacy(calendarSharedWithMe: false),
-      isTrue,
-    );
+    expect(policy.canEditPrivacy(calendarSharedWithMe: true), isFalse);
+    expect(policy.canEditPrivacy(calendarSharedWithMe: false), isTrue);
   });
 }

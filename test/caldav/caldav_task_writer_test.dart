@@ -14,9 +14,11 @@ void main() {
       expect(request.method, 'PUT');
       expect(request.headers['If-None-Match'], '*');
       expect(request.body, contains('UID:task'));
-      return http.Response('', 201, headers: <String, String>{
-        'etag': '"created"',
-      });
+      return http.Response(
+        '',
+        201,
+        headers: <String, String>{'etag': '"created"'},
+      );
     });
     final writer = CalDavTaskWriter(DavHttpClient(client));
 
@@ -34,13 +36,14 @@ void main() {
       requestCount++;
       expect(request.method, 'PUT');
       expect(request.headers['If-Match'], '"base"');
-      expect(request.headers['Content-Type'],
-          'text/calendar; charset=utf-8');
+      expect(request.headers['Content-Type'], 'text/calendar; charset=utf-8');
       expect(request.body, contains('SUMMARY:Local title'));
       expect(request.body, contains('X-UNKNOWN:keep-local'));
-      return http.Response('', 204, headers: <String, String>{
-        'etag': '"written"',
-      });
+      return http.Response(
+        '',
+        204,
+        headers: <String, String>{'etag': '"written"'},
+      );
     });
     final writer = CalDavTaskWriter(DavHttpClient(client));
     final base = _document(summary: 'Old title', description: 'Base');
@@ -86,9 +89,11 @@ void main() {
       expect(request.body, contains('SUMMARY:Local title'));
       expect(request.body, contains('DESCRIPTION:Changed remotely'));
       expect(request.body, contains('X-UNKNOWN:keep-remote'));
-      return http.Response('', 204, headers: <String, String>{
-        'etag': '"merged"',
-      });
+      return http.Response(
+        '',
+        204,
+        headers: <String, String>{'etag': '"merged"'},
+      );
     });
     final writer = CalDavTaskWriter(DavHttpClient(client));
 
@@ -178,11 +183,7 @@ void main() {
       return http.Response('', requestCount == 1 ? 204 : 404);
     });
     final writer = CalDavTaskWriter(DavHttpClient(client));
-    final record = _record(
-      document,
-      baseDocument: document,
-      etag: '"current"',
-    );
+    final record = _record(document, baseDocument: document, etag: '"current"');
 
     await writer.delete(record);
     await writer.delete(record);
@@ -198,10 +199,7 @@ void main() {
       const Duration(minutes: 15),
       now: DateTime.utc(2026, 9, 15),
     );
-    final remote = _document(
-      summary: 'Task',
-      description: 'Changed remotely',
-    );
+    final remote = _document(summary: 'Task', description: 'Changed remotely');
     final client = MockClient((request) async {
       requestCount++;
       if (requestCount == 1) {
@@ -216,9 +214,11 @@ void main() {
       }
       expect(request.body, contains('DESCRIPTION:Changed remotely'));
       expect(request.body, contains('TRIGGER;RELATED=END:-PT15M'));
-      return http.Response('', 204, headers: <String, String>{
-        'etag': '"merged"',
-      });
+      return http.Response(
+        '',
+        204,
+        headers: <String, String>{'etag': '"merged"'},
+      );
     });
     final writer = CalDavTaskWriter(DavHttpClient(client));
 

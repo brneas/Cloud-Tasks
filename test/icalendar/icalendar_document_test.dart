@@ -28,7 +28,8 @@ void main() {
 
     test('folds output by UTF-8 octets without losing Unicode', () {
       final summary = List<String>.filled(50, '🌱').join();
-      const base = 'BEGIN:VCALENDAR\r\n'
+      const base =
+          'BEGIN:VCALENDAR\r\n'
           'VERSION:2.0\r\n'
           'BEGIN:VTODO\r\n'
           'UID:unicode\r\n'
@@ -59,27 +60,34 @@ void main() {
       expect(task.sortOrder, 2097152);
     });
 
-    test('writes completion fields, UTC timestamps, and preserves extensions',
-        () {
-      final source = File('test/fixtures/ordered_task.ics').readAsStringSync();
-      final completed = const VTodoCodec().writeCompletion(
-        ICalendarDocument.parse(source),
-        isCompleted: true,
-        now: DateTime.utc(2026, 9, 14, 12, 34, 56),
-      );
-      final serialized = completed.serialize();
+    test(
+      'writes completion fields, UTC timestamps, and preserves extensions',
+      () {
+        final source = File(
+          'test/fixtures/ordered_task.ics',
+        ).readAsStringSync();
+        final completed = const VTodoCodec().writeCompletion(
+          ICalendarDocument.parse(source),
+          isCompleted: true,
+          now: DateTime.utc(2026, 9, 14, 12, 34, 56),
+        );
+        final serialized = completed.serialize();
 
-      expect(completed.firstProperty('STATUS')?.value, 'COMPLETED');
-      expect(completed.firstProperty('PERCENT-COMPLETE')?.value, '100');
-      expect(completed.firstProperty('COMPLETED')?.value, '20260914T123456Z');
-      expect(completed.firstProperty('LAST-MODIFIED')?.value,
-          '20260914T123456Z');
-      expect(completed.firstProperty('DTSTAMP')?.value, '20260914T123456Z');
-      expect(serialized, contains('X-EXPERIMENTAL-PROPERTY'));
-    });
+        expect(completed.firstProperty('STATUS')?.value, 'COMPLETED');
+        expect(completed.firstProperty('PERCENT-COMPLETE')?.value, '100');
+        expect(completed.firstProperty('COMPLETED')?.value, '20260914T123456Z');
+        expect(
+          completed.firstProperty('LAST-MODIFIED')?.value,
+          '20260914T123456Z',
+        );
+        expect(completed.firstProperty('DTSTAMP')?.value, '20260914T123456Z');
+        expect(serialized, contains('X-EXPERIMENTAL-PROPERTY'));
+      },
+    );
 
     test('reopening removes only the VTODO completion timestamp', () {
-      const source = 'BEGIN:VCALENDAR\r\n'
+      const source =
+          'BEGIN:VCALENDAR\r\n'
           'VERSION:2.0\r\n'
           'BEGIN:VTODO\r\n'
           'UID:completed\r\n'
@@ -105,7 +113,8 @@ void main() {
     });
 
     test('inserts new task properties before nested components', () {
-      const source = 'BEGIN:VCALENDAR\r\n'
+      const source =
+          'BEGIN:VCALENDAR\r\n'
           'VERSION:2.0\r\n'
           'BEGIN:VTODO\r\n'
           'UID:nested\r\n'
@@ -116,10 +125,9 @@ void main() {
           'END:VALARM\r\n'
           'END:VTODO\r\n'
           'END:VCALENDAR\r\n';
-      final updated = ICalendarDocument.parse(source).addProperty(
-        'LOCATION',
-        'Workshop',
-      );
+      final updated = ICalendarDocument.parse(
+        source,
+      ).addProperty('LOCATION', 'Workshop');
       final lines = updated.logicalLines;
 
       expect(
@@ -172,9 +180,9 @@ void main() {
 
       final remoteWithTimedDue = ICalendarDocument.parse(
         detailed.serialize().replaceFirst(
-              'DUE;VALUE=DATE:20261003',
-              'DUE;TZID=America/New_York:20261004T120000',
-            ),
+          'DUE;VALUE=DATE:20261003',
+          'DUE;TZID=America/New_York:20261004T120000',
+        ),
       );
       final rebased = remoteWithTimedDue.copyPropertyFrom(detailed, 'DUE');
       expect(rebased.serialize(), contains('DUE;VALUE=DATE:20261003'));
@@ -182,7 +190,8 @@ void main() {
     });
 
     test('clears editable details without removing unknown properties', () {
-      const source = 'BEGIN:VCALENDAR\r\n'
+      const source =
+          'BEGIN:VCALENDAR\r\n'
           'VERSION:2.0\r\n'
           'BEGIN:VTODO\r\n'
           'UID:details\r\n'
@@ -218,7 +227,8 @@ void main() {
     });
 
     test('maps advanced task fields and replaces only the display alarm', () {
-      const source = 'BEGIN:VCALENDAR\r\n'
+      const source =
+          'BEGIN:VCALENDAR\r\n'
           'VERSION:2.0\r\n'
           'BEGIN:VTODO\r\n'
           'UID:advanced\r\n'
@@ -267,7 +277,8 @@ void main() {
     });
 
     test('round-trips timed dates and multiple independent alarms', () {
-      const source = 'BEGIN:VCALENDAR\r\n'
+      const source =
+          'BEGIN:VCALENDAR\r\n'
           'VERSION:2.0\r\n'
           'BEGIN:VTODO\r\n'
           'UID:schedule\r\n'
@@ -307,22 +318,18 @@ void main() {
         ),
         now: DateTime.utc(2026, 9, 15),
       );
-      updated = codec.writeRemindersAndStamp(
-        updated,
-        const <CloudTaskReminder>[
-          CloudTaskReminder(
-            trigger: '-PT1H',
-            relatedToEnd: false,
-            description: 'Starts in one hour',
-          ),
-          CloudTaskReminder(
-            trigger: '-P1D',
-            relatedToEnd: true,
-            description: 'Due tomorrow',
-          ),
-        ],
-        now: DateTime.utc(2026, 9, 15),
-      );
+      updated = codec.writeRemindersAndStamp(updated, const <CloudTaskReminder>[
+        CloudTaskReminder(
+          trigger: '-PT1H',
+          relatedToEnd: false,
+          description: 'Starts in one hour',
+        ),
+        CloudTaskReminder(
+          trigger: '-P1D',
+          relatedToEnd: true,
+          description: 'Due tomorrow',
+        ),
+      ], now: DateTime.utc(2026, 9, 15));
       final serialized = updated.serialize();
 
       expect(
@@ -335,7 +342,8 @@ void main() {
     });
 
     test('retains unsupported alarm fields when a reminder is kept', () {
-      const source = 'BEGIN:VCALENDAR\r\n'
+      const source =
+          'BEGIN:VCALENDAR\r\n'
           'VERSION:2.0\r\n'
           'BEGIN:VTODO\r\n'
           'UID:custom-alarm\r\n'
@@ -368,7 +376,8 @@ void main() {
     });
 
     test('writes a new absolute reminder as an RFC date-time trigger', () {
-      const source = 'BEGIN:VCALENDAR\r\n'
+      const source =
+          'BEGIN:VCALENDAR\r\n'
           'VERSION:2.0\r\n'
           'BEGIN:VTODO\r\n'
           'UID:absolute-alarm\r\n'
@@ -379,10 +388,7 @@ void main() {
       final updated = codec.writeRemindersAndStamp(
         ICalendarDocument.parse(source),
         const <CloudTaskReminder>[
-          CloudTaskReminder(
-            trigger: '20300101T120000Z',
-            relatedToEnd: false,
-          ),
+          CloudTaskReminder(trigger: '20300101T120000Z', relatedToEnd: false),
         ],
         now: DateTime.utc(2026, 9, 15),
       );
@@ -398,7 +404,8 @@ void main() {
     });
 
     test('forks a clean next occurrence without losing task metadata', () {
-      const source = 'BEGIN:VCALENDAR\r\n'
+      const source =
+          'BEGIN:VCALENDAR\r\n'
           'VERSION:2.0\r\n'
           'BEGIN:VTODO\r\n'
           'UID:old-occurrence\r\n'
@@ -421,14 +428,8 @@ void main() {
       final next = codec.createNextOccurrence(
         ICalendarDocument.parse(source),
         uid: 'new-occurrence',
-        start: CloudTaskDate(
-          value: DateTime(2026, 10, 2),
-          isAllDay: true,
-        ),
-        due: CloudTaskDate(
-          value: DateTime(2026, 10, 2),
-          isAllDay: true,
-        ),
+        start: CloudTaskDate(value: DateTime(2026, 10, 2), isAllDay: true),
+        due: CloudTaskDate(value: DateTime(2026, 10, 2), isAllDay: true),
         recurrenceRule: 'FREQ=DAILY;COUNT=2',
         now: DateTime.utc(2026, 10, 1, 12),
       );
@@ -445,7 +446,8 @@ void main() {
     });
 
     test('reparents a task without discarding unrelated relationships', () {
-      const source = 'BEGIN:VCALENDAR\r\n'
+      const source =
+          'BEGIN:VCALENDAR\r\n'
           'VERSION:2.0\r\n'
           'BEGIN:VTODO\r\n'
           'UID:child\r\n'
@@ -475,7 +477,8 @@ void main() {
     });
 
     test('keeps status and percent complete consistent', () {
-      const source = 'BEGIN:VCALENDAR\r\n'
+      const source =
+          'BEGIN:VCALENDAR\r\n'
           'VERSION:2.0\r\n'
           'BEGIN:VTODO\r\n'
           'UID:progress\r\n'

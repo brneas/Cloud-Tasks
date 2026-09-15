@@ -10,24 +10,15 @@ void main() {
       uid: 'scheduled',
       summary: 'Bring tools',
       calendarId: 'personal',
-      start: CloudTaskDate(
-        value: DateTime(2030, 5, 4, 9),
-        isAllDay: false,
-      ),
-      due: CloudTaskDate(
-        value: DateTime(2030, 5, 4, 17),
-        isAllDay: false,
-      ),
+      start: CloudTaskDate(value: DateTime(2030, 5, 4, 9), isAllDay: false),
+      due: CloudTaskDate(value: DateTime(2030, 5, 4, 17), isAllDay: false),
       reminders: const <CloudTaskReminder>[
         CloudTaskReminder(trigger: '-PT15M', relatedToEnd: false),
         CloudTaskReminder(trigger: '-PT1H', relatedToEnd: true),
       ],
     );
 
-    final plan = planner.build(
-      <CloudTask>[task],
-      now: DateTime(2030, 5, 1),
-    );
+    final plan = planner.build(<CloudTask>[task], now: DateTime(2030, 5, 1));
 
     expect(plan, hasLength(2));
     expect(plan.first.scheduledAt, DateTime(2030, 5, 4, 8, 45));
@@ -40,10 +31,7 @@ void main() {
       CloudTask(
         uid: 'expired',
         summary: 'Expired',
-        due: CloudTaskDate(
-          value: DateTime(2029, 1, 1),
-          isAllDay: true,
-        ),
+        due: CloudTaskDate(value: DateTime(2029, 1, 1), isAllDay: true),
         reminders: const <CloudTaskReminder>[
           CloudTaskReminder(trigger: 'PT0S', relatedToEnd: true),
         ],
@@ -52,10 +40,7 @@ void main() {
         uid: 'completed',
         summary: 'Completed',
         status: CloudTaskStatus.completed,
-        due: CloudTaskDate(
-          value: DateTime(2031, 1, 1),
-          isAllDay: true,
-        ),
+        due: CloudTaskDate(value: DateTime(2031, 1, 1), isAllDay: true),
         reminders: const <CloudTaskReminder>[
           CloudTaskReminder(trigger: 'PT0S', relatedToEnd: true),
         ],
@@ -64,10 +49,7 @@ void main() {
         uid: 'completed-timestamp',
         summary: 'Completed timestamp',
         completedAt: DateTime.utc(2030, 1, 1),
-        due: CloudTaskDate(
-          value: DateTime(2031, 1, 1),
-          isAllDay: true,
-        ),
+        due: CloudTaskDate(value: DateTime(2031, 1, 1), isAllDay: true),
         reminders: const <CloudTaskReminder>[
           CloudTaskReminder(trigger: 'PT0S', relatedToEnd: true),
         ],
@@ -75,10 +57,7 @@ void main() {
       CloudTask(
         uid: 'email',
         summary: 'Email alarm',
-        due: CloudTaskDate(
-          value: DateTime(2031, 1, 1),
-          isAllDay: true,
-        ),
+        due: CloudTaskDate(value: DateTime(2031, 1, 1), isAllDay: true),
         reminders: const <CloudTaskReminder>[
           CloudTaskReminder(
             trigger: 'PT0S',
@@ -89,10 +68,7 @@ void main() {
       ),
     ];
 
-    expect(
-      planner.build(tasks, now: DateTime(2030, 1, 1)),
-      isEmpty,
-    );
+    expect(planner.build(tasks, now: DateTime(2030, 1, 1)), isEmpty);
   });
 
   test('uses a stable id for the same synchronized alarm', () {
@@ -128,17 +104,13 @@ void main() {
       uid: 'absolute',
       summary: 'Independent reminder',
       reminders: const <CloudTaskReminder>[
-        CloudTaskReminder(
-          trigger: '20300504T130000Z',
-          relatedToEnd: false,
-        ),
+        CloudTaskReminder(trigger: '20300504T130000Z', relatedToEnd: false),
       ],
     );
 
-    final plan = planner.build(
-      <CloudTask>[task],
-      now: DateTime.utc(2030, 5, 1),
-    );
+    final plan = planner.build(<CloudTask>[
+      task,
+    ], now: DateTime.utc(2030, 5, 1));
 
     expect(plan, hasLength(1));
     expect(plan.single.scheduledAt.toUtc(), DateTime.utc(2030, 5, 4, 13));

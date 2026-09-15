@@ -45,4 +45,3 @@ class NextcloudAccount {
     return '${serverUrl.scheme}://${serverUrl.authority}$path|$loginName';
   }
 }
-

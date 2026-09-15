@@ -136,10 +136,7 @@ void main() {
 
     expect(completed.firstProperty('STATUS')?.value, 'COMPLETED');
     expect(completed.firstProperty('PERCENT-COMPLETE')?.value, '100');
-    expect(
-      completed.firstProperty('COMPLETED')?.value,
-      '20260914T123000Z',
-    );
+    expect(completed.firstProperty('COMPLETED')?.value, '20260914T123000Z');
     expect(cleared.firstProperty('COMPLETED'), isNull);
     expect(cleared.firstProperty('STATUS')?.value, 'IN-PROCESS');
     expect(cleared.firstProperty('PERCENT-COMPLETE')?.value, '99');

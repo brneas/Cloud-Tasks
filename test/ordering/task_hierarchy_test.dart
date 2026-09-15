@@ -32,17 +32,18 @@ void main() {
     final roots = hierarchy.build(tasks, descending: false);
 
     expect(roots.map((node) => node.task.uid), <String>['root-a', 'root-b']);
-    expect(
-      roots.first.children.map((node) => node.task.uid),
-      <String>['child-a', 'child-b'],
-    );
+    expect(roots.first.children.map((node) => node.task.uid), <String>[
+      'child-a',
+      'child-b',
+    ]);
     expect(roots.first.children.first.children.single.task.uid, 'grandchild');
 
     final descending = hierarchy.build(tasks, descending: true);
     expect(
-      descending.firstWhere((node) => node.task.uid == 'root-a').children.map(
-            (node) => node.task.uid,
-          ),
+      descending
+          .firstWhere((node) => node.task.uid == 'root-a')
+          .children
+          .map((node) => node.task.uid),
       <String>['child-b', 'child-a'],
     );
   });
@@ -63,6 +64,7 @@ void main() {
         visit(child);
       }
     }
+
     for (final root in roots) {
       visit(root);
     }
@@ -79,10 +81,10 @@ void main() {
       CloudTask(uid: 'cycle', summary: 'Cycle', parentUid: 'cycle'),
     ];
 
-    expect(
-      hierarchy.descendantUids(tasks, 'root'),
-      <String>{'child', 'grandchild'},
-    );
+    expect(hierarchy.descendantUids(tasks, 'root'), <String>{
+      'child',
+      'grandchild',
+    });
     expect(hierarchy.descendantUids(tasks, 'cycle'), isEmpty);
   });
 }

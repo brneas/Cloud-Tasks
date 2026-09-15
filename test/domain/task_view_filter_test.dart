@@ -21,11 +21,7 @@ void main() {
       isTrue,
     );
     expect(
-      filter.matchesSmartView(
-        SmartTaskView.nextSevenDays,
-        nextWeek,
-        now: now,
-      ),
+      filter.matchesSmartView(SmartTaskView.nextSevenDays, nextWeek, now: now),
       isTrue,
     );
     expect(
@@ -77,11 +73,7 @@ void main() {
       isTrue,
     );
     expect(
-      filter.matchesSmartView(
-        SmartTaskView.completed,
-        timestampOnly,
-        now: now,
-      ),
+      filter.matchesSmartView(SmartTaskView.completed, timestampOnly, now: now),
       isTrue,
     );
     expect(

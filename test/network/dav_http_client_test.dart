@@ -15,10 +15,7 @@ void main() {
       }
       return http.Response('<multistatus/>', 207);
     });
-    final dav = DavHttpClient(
-      client,
-      delay: (_) async {},
-    );
+    final dav = DavHttpClient(client, delay: (_) async {});
 
     final response = await dav.request(
       'PROPFIND',
@@ -36,10 +33,7 @@ void main() {
       requestCount++;
       throw http.ClientException('Connection interrupted');
     });
-    final dav = DavHttpClient(
-      client,
-      delay: (_) async {},
-    );
+    final dav = DavHttpClient(client, delay: (_) async {});
 
     await expectLater(
       dav.request(

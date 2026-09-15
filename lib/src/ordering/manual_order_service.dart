@@ -5,10 +5,7 @@ class ManualOrderService {
 
   static const int spacing = 1048576;
 
-  List<CloudTask> sort(
-    Iterable<CloudTask> tasks, {
-    bool descending = false,
-  }) {
+  List<CloudTask> sort(Iterable<CloudTask> tasks, {bool descending = false}) {
     final result = List<CloudTask>.of(tasks);
     result.sort((left, right) {
       final leftOrder = left.sortOrder;
@@ -37,10 +34,7 @@ class ManualOrderService {
   ///
   /// A null result means there is no integer gap and the sibling group should
   /// be reindexed before retrying.
-  int? positionBetween({
-    required int? previous,
-    required int? next,
-  }) {
+  int? positionBetween({required int? previous, required int? next}) {
     if (previous == null && next == null) {
       return spacing;
     }
@@ -81,12 +75,7 @@ class ManualOrderService {
       throw RangeError.index(oldIndex, visibleSiblings, 'oldIndex');
     }
     if (newIndex < 0 || newIndex > visibleSiblings.length) {
-      throw RangeError.range(
-        newIndex,
-        0,
-        visibleSiblings.length,
-        'newIndex',
-      );
+      throw RangeError.range(newIndex, 0, visibleSiblings.length, 'newIndex');
     }
 
     final desiredDisplay = List<CloudTask>.of(visibleSiblings);
@@ -117,11 +106,7 @@ class ManualOrderService {
     final serviceNewIndex = desiredAscendingIndex > oldAscendingIndex
         ? desiredAscendingIndex + 1
         : desiredAscendingIndex;
-    return reorder(
-      currentAscending,
-      oldAscendingIndex,
-      serviceNewIndex,
-    );
+    return reorder(currentAscending, oldAscendingIndex, serviceNewIndex);
   }
 
   /// Reorders a visible subset without losing the positions of hidden siblings.
@@ -266,12 +251,7 @@ class ManualOrderService {
       throw RangeError.index(oldIndex, visibleSiblings, 'oldIndex');
     }
     if (newIndex < 0 || newIndex > visibleSiblings.length) {
-      throw RangeError.range(
-        newIndex,
-        0,
-        visibleSiblings.length,
-        'newIndex',
-      );
+      throw RangeError.range(newIndex, 0, visibleSiblings.length, 'newIndex');
     }
 
     final reordered = List<CloudTask>.of(visibleSiblings);

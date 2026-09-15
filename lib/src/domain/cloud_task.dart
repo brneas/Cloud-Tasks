@@ -146,8 +146,9 @@ class CloudTask {
       categories: categories ?? this.categories,
       location: clearLocation ? null : location ?? this.location,
       url: clearUrl ? null : url ?? this.url,
-      recurrenceRule:
-          clearRecurrenceRule ? null : recurrenceRule ?? this.recurrenceRule,
+      recurrenceRule: clearRecurrenceRule
+          ? null
+          : recurrenceRule ?? this.recurrenceRule,
       reminders: clearReminder
           ? const <CloudTaskReminder>[]
           : reminders ?? this.reminders,

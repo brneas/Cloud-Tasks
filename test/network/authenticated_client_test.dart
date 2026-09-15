@@ -7,11 +7,7 @@ import 'package:http/testing.dart';
 void main() {
   final account = NextcloudAccount(
     id: 'account',
-    serverUrl: Uri(
-      scheme: 'https',
-      host: 'cloud.example',
-      path: '/nextcloud',
-    ),
+    serverUrl: Uri(scheme: 'https', host: 'cloud.example', path: '/nextcloud'),
     loginName: 'alice',
     appPassword: 'app-password',
   );
@@ -19,8 +15,7 @@ void main() {
   test('adds authorization only to the account origin', () async {
     final authorizationByHost = <String, String?>{};
     final inner = MockClient((request) async {
-      authorizationByHost[request.url.host] =
-          request.headers['Authorization'];
+      authorizationByHost[request.url.host] = request.headers['Authorization'];
       return http.Response('ok', 200);
     });
     final client = AuthenticatedClient(account: account, inner: inner);

@@ -32,7 +32,8 @@ class _CloudTasksHomeScreenState extends State<CloudTasksHomeScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _ownsController = widget.controller == null;
-    _controller = widget.controller ??
+    _controller =
+        widget.controller ??
         CloudTasksController(
           accountStore: SecureAccountStore(),
           taskStore: SqliteTaskStore(),
@@ -279,9 +280,9 @@ class _CloudTasksHomeScreenState extends State<CloudTasksHomeScreen>
                   ],
                   onChanged: (value) {
                     if (value != null) {
-                      setDialogState(() => selected = selected.copyWith(
-                            theme: value,
-                          ));
+                      setDialogState(
+                        () => selected = selected.copyWith(theme: value),
+                      );
                     }
                   },
                 ),
@@ -293,15 +294,23 @@ class _CloudTasksHomeScreenState extends State<CloudTasksHomeScreen>
                   ),
                   items: const <DropdownMenuItem<int>>[
                     DropdownMenuItem(value: 0, child: Text('Off')),
-                    DropdownMenuItem(value: 15, child: Text('Every 15 minutes')),
-                    DropdownMenuItem(value: 30, child: Text('Every 30 minutes')),
+                    DropdownMenuItem(
+                      value: 15,
+                      child: Text('Every 15 minutes'),
+                    ),
+                    DropdownMenuItem(
+                      value: 30,
+                      child: Text('Every 30 minutes'),
+                    ),
                     DropdownMenuItem(value: 60, child: Text('Every hour')),
                   ],
                   onChanged: (value) {
                     if (value != null) {
-                      setDialogState(() => selected = selected.copyWith(
-                            automaticSyncMinutes: value,
-                          ));
+                      setDialogState(
+                        () => selected = selected.copyWith(
+                          automaticSyncMinutes: value,
+                        ),
+                      );
                     }
                   },
                 ),
@@ -404,18 +413,13 @@ class _CloudTasksHomeScreenState extends State<CloudTasksHomeScreen>
           .replaceAll(RegExp(r'[^A-Za-z0-9._-]+'), '-')
           .replaceAll(RegExp(r'^-+|-+$'), '');
       final fileName = '${safeName.isEmpty ? 'tasks' : safeName}.ics';
-      await share_plus.Share.shareXFiles(
-        <XFile>[
-          XFile.fromData(
-            Uint8List.fromList(
-              utf8.encode(_controller.exportCalendar(calendar)),
-            ),
-            mimeType: 'text/calendar',
-            name: fileName,
-          ),
-        ],
-        subject: 'Export Nextcloud task list',
-      );
+      await share_plus.Share.shareXFiles(<XFile>[
+        XFile.fromData(
+          Uint8List.fromList(utf8.encode(_controller.exportCalendar(calendar))),
+          mimeType: 'text/calendar',
+          name: fileName,
+        ),
+      ], subject: 'Export Nextcloud task list');
     } on Object catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

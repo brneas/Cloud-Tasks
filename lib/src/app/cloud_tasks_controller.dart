@@ -50,11 +50,11 @@ class CloudTasksController extends ChangeNotifier {
         const NoopTaskNotificationScheduler(),
     BackgroundSyncScheduler backgroundSyncScheduler =
         const NoopBackgroundSyncScheduler(),
-  })  : _accountStore = accountStore,
-        _taskStore = taskStore,
-        _browserLauncher = browserLauncher,
-        _notificationScheduler = notificationScheduler,
-        _backgroundSyncScheduler = backgroundSyncScheduler;
+  }) : _accountStore = accountStore,
+       _taskStore = taskStore,
+       _browserLauncher = browserLauncher,
+       _notificationScheduler = notificationScheduler,
+       _backgroundSyncScheduler = backgroundSyncScheduler;
 
   static const _ordering = ManualOrderService();
   static const _hierarchy = TaskHierarchy();
@@ -319,9 +319,10 @@ class CloudTasksController extends ChangeNotifier {
   }
 
   int descendantCount(TaskRecord record) {
-    return _descendantCounts[
-          _taskKey(record.task.calendarId, record.task.uid)
-        ] ??
+    return _descendantCounts[_taskKey(
+          record.task.calendarId,
+          record.task.uid,
+        )] ??
         0;
   }
 
@@ -509,7 +510,8 @@ class CloudTasksController extends ChangeNotifier {
         preferences.automaticSyncMinutes,
       );
     } on Object {
-      _message = 'Settings were saved, but Android could not schedule '
+      _message =
+          'Settings were saved, but Android could not schedule '
           'background sync. Foreground and resume sync remain available.';
     }
     notifyListeners();
@@ -545,9 +547,7 @@ class CloudTasksController extends ChangeNotifier {
     });
   }
 
-  void _schedulePendingWriteback({
-    Duration delay = _writebackDelay,
-  }) {
+  void _schedulePendingWriteback({Duration delay = _writebackDelay}) {
     if (_disposed || _account == null) {
       return;
     }
@@ -603,9 +603,7 @@ class CloudTasksController extends ChangeNotifier {
     notifyListeners();
     final authenticated = AuthenticatedClient(account: currentAccount);
     try {
-      final warnings = await _flushPendingWrites(
-        DavHttpClient(authenticated),
-      );
+      final warnings = await _flushPendingWrites(DavHttpClient(authenticated));
       _message = warnings.isEmpty ? null : warnings.join('\n');
       await _loadCachedData();
     } on Object catch (error) {
@@ -725,8 +723,9 @@ class CloudTasksController extends ChangeNotifier {
     }
     final authenticated = AuthenticatedClient(account: account);
     try {
-      return await CalDavCalendarSharingService(DavHttpClient(authenticated))
-          .readShares(calendar);
+      return await CalDavCalendarSharingService(
+        DavHttpClient(authenticated),
+      ).readShares(calendar);
     } finally {
       authenticated.close();
     }
@@ -846,8 +845,8 @@ class CloudTasksController extends ChangeNotifier {
       final sortOrder = _calendars.isEmpty
           ? ManualOrderService.spacing
           : (_calendars.last.sortOrder ??
-                  _calendars.length * ManualOrderService.spacing) +
-              ManualOrderService.spacing;
+                    _calendars.length * ManualOrderService.spacing) +
+                ManualOrderService.spacing;
       final created = await CalDavCalendarWriter(dav).create(
         accountId: account.id,
         calendarHomeUrl: discovered.calendarHomeUrl,
@@ -977,7 +976,8 @@ class CloudTasksController extends ChangeNotifier {
       return;
     }
     if (reordered.any((calendar) => !canManageCalendar(calendar))) {
-      _message = 'Shared or read-only lists prevent changing the global list '
+      _message =
+          'Shared or read-only lists prevent changing the global list '
           'order on this account.';
       notifyListeners();
       return;
@@ -1225,8 +1225,9 @@ class CloudTasksController extends ChangeNotifier {
     for (final item in source) {
       final isRoot = item.task.uid == record.task.uid;
       final newUid = uidMap[item.task.uid]!;
-      final parentUid =
-          isRoot ? item.task.parentUid : uidMap[item.task.parentUid];
+      final parentUid = isRoot
+          ? item.task.parentUid
+          : uidMap[item.task.parentUid];
       final document = _codec.duplicate(
         item.rawDocument,
         uid: newUid,
@@ -1464,9 +1465,7 @@ class CloudTasksController extends ChangeNotifier {
     }
     final records = await _taskStore.readCalendarTasks(calendar.id);
     final deleteUids = <String>{};
-    for (final item in records.where(
-      (item) => item.task.isCompleted,
-    )) {
+    for (final item in records.where((item) => item.task.isCompleted)) {
       deleteUids
         ..add(item.task.uid)
         ..addAll(
@@ -1515,11 +1514,7 @@ class CloudTasksController extends ChangeNotifier {
             isCompleted: false,
             now: now,
           ),
-          const <String>{
-            'STATUS',
-            'PERCENT-COMPLETE',
-            'COMPLETED',
-          },
+          const <String>{'STATUS', 'PERCENT-COMPLETE', 'COMPLETED'},
         ),
     ]);
     return saved ? completed.length : 0;
@@ -1736,7 +1731,8 @@ class CloudTasksController extends ChangeNotifier {
         .where((item) => movingUids.contains(item.task.uid))
         .toList(growable: false);
     if (destinationRecords.any((item) => movingUids.contains(item.task.uid))) {
-      _message = 'The destination already contains one of this task’s IDs. '
+      _message =
+          'The destination already contains one of this task’s IDs. '
           'Nothing was moved.';
       notifyListeners();
       return;
@@ -2152,8 +2148,9 @@ class CloudTasksController extends ChangeNotifier {
       final tasks = <CloudTask>[];
       for (final calendar in _calendars) {
         tasks.addAll(
-          (await _taskStore.readCalendarTasks(calendar.id))
-              .map((record) => record.task),
+          (await _taskStore.readCalendarTasks(
+            calendar.id,
+          )).map((record) => record.task),
         );
       }
       await _notificationScheduler.reconcile(tasks);
@@ -2235,10 +2232,10 @@ class CloudTasksController extends ChangeNotifier {
           warnings.add(
             operation.type == PendingOperationType.delete
                 ? '${record.task.summary} changed on another device before it '
-                    'could be deleted. The server version was kept.'
+                      'could be deleted. The server version was kept.'
                 : '${record.task.summary} changed in the same field on another '
-                    'device. The server version was kept; please apply your '
-                    'change again.',
+                      'device. The server version was kept; please apply your '
+                      'change again.',
           );
         } on DavHttpException catch (error) {
           if (batchId != null) blockedBatches.add(batchId);
@@ -2311,9 +2308,7 @@ class CloudTasksController extends ChangeNotifier {
     );
     if (!selectedStillExists) {
       _selectedCalendarId = _defaultCalendarId ?? _calendars.first.id;
-      _preferences = _preferences.copyWith(
-        lastCalendarId: _selectedCalendarId,
-      );
+      _preferences = _preferences.copyWith(lastCalendarId: _selectedCalendarId);
       await _saveViewPreferences();
     }
     await _loadTasksForCurrentView();
@@ -2347,12 +2342,10 @@ class CloudTasksController extends ChangeNotifier {
 
   void _replaceTasks(Iterable<TaskRecord> records) {
     _tasks = List<TaskRecord>.unmodifiable(records);
-    _recordsByKey = Map<String, TaskRecord>.unmodifiable(
-      <String, TaskRecord>{
-        for (final record in _tasks)
-          _taskKey(record.task.calendarId, record.task.uid): record,
-      },
-    );
+    _recordsByKey = Map<String, TaskRecord>.unmodifiable(<String, TaskRecord>{
+      for (final record in _tasks)
+        _taskKey(record.task.calendarId, record.task.uid): record,
+    });
     final uniqueTags = <String>{};
     final tasksByCalendar = <String?, List<CloudTask>>{};
     for (final record in _tasks) {
@@ -2398,7 +2391,8 @@ class CloudTasksController extends ChangeNotifier {
     try {
       await _taskStore.saveAppPreferences(_preferences);
     } on Object {
-      _message = 'The current view changed, but its display preference could '
+      _message =
+          'The current view changed, but its display preference could '
           'not be saved on this device.';
       notifyListeners();
     }
@@ -2408,20 +2402,22 @@ class CloudTasksController extends ChangeNotifier {
     final query = _searchQuery.trim().toLowerCase();
     final tag = _selectedTag;
     final now = DateTime.now();
-    final filtered = _tasks.where((record) {
-      final task = record.task;
-      if (!_viewFilter.matchesSmartView(
-        _selectedSmartView,
-        task,
-        now: now,
-      )) {
-        return false;
-      }
-      if (!_viewFilter.matchesTag(task, tag)) {
-        return false;
-      }
-      return _viewFilter.matchesQuery(task, query);
-    }).toList(growable: false);
+    final filtered = _tasks
+        .where((record) {
+          final task = record.task;
+          if (!_viewFilter.matchesSmartView(
+            _selectedSmartView,
+            task,
+            now: now,
+          )) {
+            return false;
+          }
+          if (!_viewFilter.matchesTag(task, tag)) {
+            return false;
+          }
+          return _viewFilter.matchesQuery(task, query);
+        })
+        .toList(growable: false);
     if (isSmartView) {
       filtered.sort((left, right) {
         final leftDate = _viewFilter.displayDate(left.task);
@@ -2432,13 +2428,14 @@ class CloudTasksController extends ChangeNotifier {
         if (leftDate != null && rightDate == null) {
           return -1;
         }
-        final dateComparison =
-            leftDate == null ? 0 : leftDate.compareTo(rightDate!);
+        final dateComparison = leftDate == null
+            ? 0
+            : leftDate.compareTo(rightDate!);
         return dateComparison != 0
             ? dateComparison
             : left.task.summary.toLowerCase().compareTo(
-                  right.task.summary.toLowerCase(),
-                );
+                right.task.summary.toLowerCase(),
+              );
       });
     }
     return List<TaskRecord>.unmodifiable(filtered);
@@ -2511,7 +2508,8 @@ class CloudTasksController extends ChangeNotifier {
       if (platformMessage.contains('unwrap key') ||
           platformMessage.contains('keystore') ||
           platformMessage.contains('badpadding')) {
-        detail = 'Android secure storage could not unlock its encryption key. '
+        detail =
+            'Android secure storage could not unlock its encryption key. '
             'Disable app backup, clear Cloud Tasks app storage, and try again.';
       } else {
         detail = 'Android reported platform error ${error.code}.';

@@ -25,8 +25,9 @@ void main() {
       return http.Response(_sharesResponse, 207);
     });
 
-    final shares = await CalDavCalendarSharingService(DavHttpClient(client))
-        .readShares(calendar);
+    final shares = await CalDavCalendarSharingService(
+      DavHttpClient(client),
+    ).readShares(calendar);
 
     expect(shares, hasLength(2));
     expect(shares.first.displayName, 'Developers');
@@ -72,8 +73,9 @@ void main() {
       canWrite: true,
     );
 
-    await CalDavCalendarSharingService(DavHttpClient(client))
-        .updatePermission(calendar: calendar, share: share, canWrite: false);
+    await CalDavCalendarSharingService(
+      DavHttpClient(client),
+    ).updatePermission(calendar: calendar, share: share, canWrite: false);
 
     expect(sent.body, contains('<oc:set>'));
     expect(sent.body, isNot(contains('<oc:read-write/>')));
@@ -92,8 +94,9 @@ void main() {
       canWrite: false,
     );
 
-    await CalDavCalendarSharingService(DavHttpClient(client))
-        .unshare(calendar: calendar, share: share);
+    await CalDavCalendarSharingService(
+      DavHttpClient(client),
+    ).unshare(calendar: calendar, share: share);
 
     expect(sent.body, contains('<oc:remove>'));
     expect(sent.body, contains('principal:principals/users/jane'));

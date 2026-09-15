@@ -11,9 +11,9 @@ class InitialSyncService {
     required CalDavDiscoveryService discovery,
     required CalDavTaskReader taskReader,
     required SqliteTaskStore store,
-  })  : _discovery = discovery,
-        _taskReader = taskReader,
-        _store = store;
+  }) : _discovery = discovery,
+       _taskReader = taskReader,
+       _store = store;
 
   final CalDavDiscoveryService _discovery;
   final CalDavTaskReader _taskReader;
@@ -81,10 +81,7 @@ class InitialSyncService {
     );
   }
 
-  static TaskCalendar _withSyncToken(
-    TaskCalendar calendar,
-    String? syncToken,
-  ) {
+  static TaskCalendar _withSyncToken(TaskCalendar calendar, String? syncToken) {
     return TaskCalendar(
       id: calendar.id,
       accountId: calendar.accountId,

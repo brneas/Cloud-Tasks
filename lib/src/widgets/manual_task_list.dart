@@ -3,10 +3,7 @@ import 'package:cloud_tasks/src/ordering/manual_order_service.dart';
 import 'package:flutter/material.dart';
 
 class ManualTaskList extends StatefulWidget {
-  const ManualTaskList({
-    required this.initialTasks,
-    super.key,
-  });
+  const ManualTaskList({required this.initialTasks, super.key});
 
   final List<CloudTask> initialTasks;
 

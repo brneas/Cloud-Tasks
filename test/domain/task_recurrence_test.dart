@@ -9,14 +9,8 @@ void main() {
     final task = CloudTask(
       uid: 'weekly',
       summary: 'Weekly task',
-      start: CloudTaskDate(
-        value: DateTime(2030, 1, 7, 9),
-        isAllDay: false,
-      ),
-      due: CloudTaskDate(
-        value: DateTime(2030, 1, 7, 10),
-        isAllDay: false,
-      ),
+      start: CloudTaskDate(value: DateTime(2030, 1, 7, 9), isAllDay: false),
+      due: CloudTaskDate(value: DateTime(2030, 1, 7, 10), isAllDay: false),
       recurrenceRule: 'FREQ=WEEKLY;BYDAY=MO,WE;COUNT=4',
     );
 
@@ -32,10 +26,7 @@ void main() {
     final task = CloudTask(
       uid: 'last',
       summary: 'Last task',
-      due: CloudTaskDate(
-        value: DateTime(2030, 1, 7),
-        isAllDay: true,
-      ),
+      due: CloudTaskDate(value: DateTime(2030, 1, 7), isAllDay: true),
       recurrenceRule: 'FREQ=DAILY;COUNT=1',
     );
 
@@ -51,10 +42,7 @@ void main() {
         isAllDay: false,
         timeZoneId: 'America/New_York',
       ),
-      due: CloudTaskDate(
-        value: DateTime.utc(2030, 1, 14, 15),
-        isAllDay: false,
-      ),
+      due: CloudTaskDate(value: DateTime.utc(2030, 1, 14, 15), isAllDay: false),
       recurrenceRule: 'FREQ=MONTHLY;BYDAY=2MO',
     );
 
